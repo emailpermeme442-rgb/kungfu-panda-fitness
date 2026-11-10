@@ -94,3 +94,311 @@ jobs:
           rootProject.name = "SevenFitnessLog"
           include ':app'
           EOF
+
+          cat > build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
+          EOF
+
+          cat > app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+          }
+
+          android {
+              namespace 'it.sevenfitness.log'
+              compileSdk 35
+
+              defaultConfig {
+                  applicationId 'it.sevenfitness.log'
+                  minSdk 23
+                  targetSdk 34
+                  versionCode 1
+                  versionName '1.0'
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <application
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar"
+                  android:label="Seven Fitness Log"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher"
+                  android:usesCleartextTraffic="false"
+                  android:allowBackup="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > app/src/main/java/it/sevenfitness/log/MainActivity.java <<'EOF'
+          package it.sevenfitness.log;
+
+          import android.app.Activity;
+          import android.content.ContentValues;
+          import android.content.Intent;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.provider.MediaStore;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.ValueCallback;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Toast;
+
+          import java.io.OutputStream;
+
+          public class MainActivity extends Activity {
+              private WebView webView;
+              private ValueCallback<Uri[]> fileCallback;
+
+              private static final int FILE_REQUEST = 100;
+              private static final int CREATE_FILE_REQUEST = 101;
+
+              private String pendingFilename;
+              private String pendingMimeType;
+              private byte[] pendingData;
+
+              @Override
+              protected void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+
+                  webView = new WebView(this);
+                  setContentView(webView);
+
+                  WebSettings settings = webView.getSettings();
+                  settings.setJavaScriptEnabled(true);
+                  settings.setDomStorageEnabled(true);
+                  settings.setAllowFileAccess(true);
+                  settings.setAllowContentAccess(true);
+
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.addJavascriptInterface(
+                          new WebAppInterface(this),
+                          "AndroidBridge"
+                  );
+
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onShowFileChooser(
+                              WebView view,
+                              ValueCallback<Uri[]> callback,
+                              FileChooserParams params
+                      ) {
+                          if (fileCallback != null) {
+                              fileCallback.onReceiveValue(null);
+                          }
+                          fileCallback = callback;
+
+                          try {
+                              Intent intent = params.createIntent();
+                              startActivityForResult(intent, FILE_REQUEST);
+                              return true;
+                          } catch (Exception e) {
+                              fileCallback.onReceiveValue(null);
+                              fileCallback = null;
+                              showToast("Impossibile aprire selezione file");
+                              return false;
+                          }
+                      }
+                  });
+
+                  webView.loadUrl("file:///android_asset/index.html");
+              }
+
+              private void showToast(String message) {
+                  runOnUiThread(() ->
+                          Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                  );
+              }
+
+              public class WebAppInterface {
+                  private final Activity mContext;
+
+                  WebAppInterface(Activity context) {
+                      mContext = context;
+                  }
+
+                  @JavascriptInterface
+                  public void saveFile(
+                          String filename,
+                          String mimeType,
+                          String base64Data
+                  ) {
+                      Uri createdUri = null;
+
+                      try {
+                          byte[] data = android.util.Base64.decode(
+                                  base64Data,
+                                  android.util.Base64.DEFAULT
+                          );
+
+                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                              ContentValues values = new ContentValues();
+                              values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
+                              values.put(MediaStore.Downloads.MIME_TYPE, mimeType);
+                              values.put(
+                                      MediaStore.Downloads.RELATIVE_PATH,
+                                      Environment.DIRECTORY_DOWNLOADS
+                              );
+
+                              createdUri = mContext.getContentResolver().insert(
+                                      MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                                      values
+                              );
+
+                              if (createdUri == null) {
+                                  throw new Exception("Impossibile creare il file");
+                              }
+
+                              try (OutputStream out =
+                                           mContext.getContentResolver().openOutputStream(createdUri)) {
+                                  if (out == null) {
+                                      throw new Exception("Impossibile aprire il file");
+                                  }
+                                  out.write(data);
+                                  out.flush();
+                              }
+
+                              showToast("Salvato in Download: " + filename);
+
+                          } else {
+                              pendingFilename = filename;
+                              pendingMimeType = mimeType;
+                              pendingData = data;
+
+                              mContext.runOnUiThread(() -> {
+                                  try {
+                                      Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                                      intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                      intent.setType(mimeType);
+                                      intent.putExtra(Intent.EXTRA_TITLE, filename);
+                                      mContext.startActivityForResult(
+                                              intent,
+                                              CREATE_FILE_REQUEST
+                                      );
+                                  } catch (Exception e) {
+                                      clearPendingFile();
+                                      showToast("Impossibile creare il file");
+                                  }
+                              });
+                          }
+
+                      } catch (Exception e) {
+                          if (createdUri != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                              try {
+                                  mContext.getContentResolver().delete(createdUri, null, null);
+                              } catch (Exception ignored) {
+                                  // Nessuna ulteriore azione: viene mostrato l'errore originale.
+                              }
+                          }
+                          showToast("Errore salvataggio: " + e.getMessage());
+                      }
+                  }
+              }
+
+              private void clearPendingFile() {
+                  pendingData = null;
+                  pendingFilename = null;
+                  pendingMimeType = null;
+              }
+
+              @Override
+              protected void onActivityResult(
+                      int requestCode,
+                      int resultCode,
+                      Intent data
+              ) {
+                  super.onActivityResult(requestCode, resultCode, data);
+
+                  if (requestCode == FILE_REQUEST) {
+                      if (fileCallback != null) {
+                          Uri[] results = null;
+                          if (resultCode == RESULT_OK && data != null) {
+                              results = WebChromeClient.FileChooserParams.parseResult(
+                                      resultCode,
+                                      data
+                              );
+                          }
+                          fileCallback.onReceiveValue(results);
+                          fileCallback = null;
+                      }
+                      return;
+                  }
+
+                  if (requestCode == CREATE_FILE_REQUEST) {
+                      try {
+                          if (resultCode != RESULT_OK || data == null || data.getData() == null) {
+                              return; // L'utente ha annullato: nessun file salvato.
+                          }
+
+                          if (pendingData == null) {
+                              throw new Exception("Dati del file non disponibili");
+                          }
+
+                          Uri uri = data.getData();
+                          try (OutputStream out = getContentResolver().openOutputStream(uri)) {
+                              if (out == null) {
+                                  throw new Exception("Impossibile aprire il file scelto");
+                              }
+                              out.write(pendingData);
+                              out.flush();
+                          }
+
+                          Toast.makeText(
+                                  this,
+                                  "File salvato con successo!",
+                                  Toast.LENGTH_LONG
+                          ).show();
+
+                      } catch (Exception e) {
+                          Toast.makeText(
+                                  this,
+                                  "Errore scrittura file: " + e.getMessage(),
+                                  Toast.LENGTH_LONG
+                          ).show();
+                      } finally {
+                          clearPendingFile();
+                      }
+                  }
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (webView != null && webView.canGoBack()) {
+                      webView.goBack();
+                  } else {
+                      super.onBackPressed();
+                  }
+              }
+          }
+          EOF
+
+      - name: Build APK
+        run: gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Seven-Fitness-Log-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
