@@ -1,0 +1,40 @@
+name: Compila APK Android
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codice
+        uses: actions/checkout@v4
+
+      - name: Imposta Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Imposta Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Installa Bubblewrap CLI per Android
+        run: npm install -g @bubblewrap/cli
+
+      - name: Inizializza e genera progetto Android
+        run: |
+          bubblewrap init --manifest=https://raw.githubusercontent.com/${{ github.repository }}/main/manifest.json --directory=android-project
+          cd android-project
+          bubblewrap build
+
+      - name: Carica APK negli Artifacts di GitHub
+        uses: actions/upload-artifact@v4
+        with:
+          name: SevenFitnessLog-Android-APK
+          path: android-project/*.apk
