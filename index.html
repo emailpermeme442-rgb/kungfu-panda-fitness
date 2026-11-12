@@ -163,8 +163,11 @@ select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0
 }
 .stepper-control input { border: none; background: transparent; text-align: center; padding: 6px 2px; }
 
-.set-row { display: grid; grid-template-columns: 28px 1fr 1fr 38px; gap: 6px; align-items: center; margin-bottom: 8px; }
+.set-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) auto 38px; gap: 5px; align-items: center; margin-bottom: 8px; }
 .set-row input { text-align: center; font-weight: 700; border-radius: 10px; padding: 8px 4px; }
+.recovery-btn { border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; border-radius: 10px; min-height: 38px; padding: 0 7px; font-size: 0.68rem; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.recovery-btn.running { background: #fee2e2; border-color: #fecaca; color: #b91c1c; }
+@media (max-width: 390px) { .set-row { grid-template-columns: 20px minmax(0,1fr) minmax(0,1fr) auto 36px; gap: 3px; } .recovery-btn { padding: 0 5px; font-size: 0.62rem; } }
 .check-btn {
   background: #f1f5f9; color: #64748b; border: 1px solid var(--border-subtle);
   height: 38px; width: 38px; border-radius: 10px; font-weight: 800; cursor: pointer;
@@ -292,7 +295,10 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
       <div style="display: flex; gap: 10px;">
         <div style="flex: 1;">
           <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Ciclo Programma</label>
-          <select id="cycleSelect" onchange="selectCycle(this.value)"></select>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <select id="cycleSelect" onchange="selectCycle(this.value)" style="flex:1; min-width:0;"></select>
+            <button class="btn-secondary" id="deleteCycleBtn" onclick="deleteCurrentCycle()" title="Elimina ciclo" style="padding:10px 9px;">🗑️</button>
+          </div>
         </div>
         <div style="flex: 1;">
           <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Settimana</label>
@@ -465,7 +471,7 @@ function ex(name, kg, reps, customDesc) {
   return {
     name, kg, reps, description: customDesc || '',
     sets: (typeof reps === 'string' ? reps.split(',') : Array(reps).fill(kg)).map(r => ({
-      plannedKg: kg, plannedReps: +r || 6, actualKg: '', actualReps: '', done: false
+      plannedKg: kg, plannedReps: +r || 6, actualKg: '', actualReps: '', done: false, recoverySeconds: 0
     }))
   };
 }
@@ -563,6 +569,12 @@ function fillCycleSelect() {
   s.innerHTML = db.cycles.map((c,i) => `<option value="${i}">${c.name}</option>`).join('');
   s.value = ci;
   document.getElementById('weekSelect').value = wi + 1;
+  const deleteBtn = document.getElementById('deleteCycleBtn');
+  if (deleteBtn) {
+    deleteBtn.disabled = db.cycles.length <= 1;
+    deleteBtn.style.opacity = deleteBtn.disabled ? '0.4' : '1';
+    deleteBtn.style.cursor = deleteBtn.disabled ? 'not-allowed' : 'pointer';
+  }
 }
 
 function selectCycle(v) { ci = +v; wi = 0; db.activeCycle = ci; db.activeWeek = wi; refresh(); }
@@ -580,7 +592,7 @@ function renderWorkoutList() {
   list.forEach((session, i) => {
     const card = document.createElement('div');
     card.className = 'card card-clickable';
-    let detailText = currentSport === 'pesi' ? `${session.items.length} esercizi previsti` : `Target: ${session.minutes || 30} min`;
+    let detailText = currentSport === 'pesi' ? `${(session.items || []).length} esercizi previsti` : `Target: ${session.minutes || 30} min`;
     let badgeSport = currentSport.toUpperCase();
     let sportColor = currentSport === 'pesi' ? 'var(--fut-gold)' : currentSport === 'nuoto' ? 'var(--fut-cyan)' : currentSport === 'corsa' ? 'var(--fut-green)' : 'var(--fut-purple)';
     
@@ -634,7 +646,10 @@ function openGymSession(idx) {
       <textarea id="sessionNotes" placeholder="Es. Ottime sensazioni..." rows="2" oninput="saveSessionNotes('pesi', ${idx}, this.value)">${s.notes || ''}</textarea>
     </div>
 
-    <button class="btn-gold" onclick="finishSession('pesi',${idx})">✓ Salva Sessione Pesi</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-secondary" style="flex:1; color:#dc2626; border-color:#fecaca;" onclick="deleteSession(${idx})">🗑️ Elimina sessione</button>
+      <button class="btn-gold" style="flex:2;" onclick="finishSession('pesi',${idx})">✓ Salva Sessione Pesi</button>
+    </div>
   `;
   showModal(body);
 }
@@ -659,17 +674,28 @@ function confirmAddSession() {
   let name = document.getElementById('newSessionName').value.trim();
   if(!name) { alert('Inserisci un nome per la sessione!'); return; }
 
-  let currentCycle = db.cycles[ci];
-  currentCycle.weeks.forEach(w => {
-    if(w.sports && w.sports[currentSport]) {
-      let newSes = currentSport === 'pesi' 
-        ? { name, items: [], notes: '', logged: false }
-        : { name, distance: 0, minutes: 30, notes: '', logged: false };
-      w.sports[currentSport].push(JSON.parse(JSON.stringify(newSes)));
-    }
-  });
+  const week = db.cycles[ci].weeks[wi];
+  if (!week.sports) week.sports = {};
+  if (!Array.isArray(week.sports[currentSport])) week.sports[currentSport] = [];
 
+  const newSes = currentSport === 'pesi'
+    ? { name, items: [], notes: '', logged: false }
+    : { name, distance: 0, minutes: 30, notes: '', logged: false };
+
+  week.sports[currentSport].push(newSes);
   save(); closeModal(); renderWorkoutList();
+}
+
+function deleteSession(sIdx) {
+  const sessions = db.cycles[ci].weeks[wi].sports[currentSport] || [];
+  const session = sessions[sIdx];
+  if (!session) return;
+  if (!confirm(`Eliminare definitivamente la sessione "${session.name}" dalla Settimana ${wi + 1}?`)) return;
+
+  sessions.splice(sIdx, 1);
+  save();
+  closeModal();
+  renderWorkoutList();
 }
 
 function addNewExercisePrompt(sIdx) {
@@ -795,12 +821,16 @@ function logExercise(sIdx, ei) {
         <input type="number" placeholder="Reps" value="${s.actualReps !== undefined ? s.actualReps : ''}" oninput="syncSet(${sIdx},${ei},${i},'reps',this.value)" id="repsInput_${i}">
         <button class="stepper-btn" onclick="adjustSetVal(${sIdx},${ei},${i},'reps',1)">＋</button>
       </div>
+      <button class="recovery-btn ${s.recoveryStartedAt ? 'running' : ''}" onclick="toggleRecoveryTimer(${sIdx},${ei},${i})" id="recoveryBtn_${i}">
+        ${s.recoveryStartedAt ? '■' : '▶'} <span data-recovery-time="${ci}-${wi}-${sIdx}-${ei}-${i}">${formatRecoveryTime(getRecoverySeconds(s))}</span>
+      </button>
       <button class="check-btn ${s.done ? 'done' : ''}" onclick="toggleDone(${sIdx},${ei},${i})" id="done${i}">✓</button>
     </div>
   `).join('');
 
   showModal(`
     ${guideHtml}
+    <div style="font-size:0.68rem; color:var(--text-muted); margin:-4px 0 8px;">Recupero</div>
     <div style="background:#f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 10px; font-size: 0.8rem; border:1px solid var(--border-subtle);">
       <strong style="color:#d97706;">Target:</strong> ${e.sets.map(s => `${s.plannedKg}kg × ${s.plannedReps}`).join(' | ')}
     </div>
@@ -810,6 +840,62 @@ function logExercise(sIdx, ei) {
       <button class="btn-gold" style="flex:2;" onclick="saveExercise(${sIdx},${ei})">Salva</button>
     </div>
   `);
+  ensureRecoveryTicker();
+}
+
+let recoveryTicker = null;
+
+function formatRecoveryTime(totalSeconds) {
+  const seconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+}
+
+function getRecoverySeconds(set) {
+  const saved = Math.max(0, Number(set.recoverySeconds) || 0);
+  if (!set.recoveryStartedAt) return saved;
+  return saved + Math.max(0, Math.floor((Date.now() - Number(set.recoveryStartedAt)) / 1000));
+}
+
+function toggleRecoveryTimer(sIdx, ei, setIdx) {
+  const set = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei].sets[setIdx];
+  if (set.recoveryStartedAt) {
+    set.recoverySeconds = getRecoverySeconds(set);
+    delete set.recoveryStartedAt;
+  } else {
+    set.recoveryStartedAt = Date.now();
+  }
+  save();
+  logExercise(sIdx, ei);
+}
+
+function ensureRecoveryTicker() {
+  const hasRunningTimer = db.cycles.some(c => c.weeks.some(w =>
+    Object.values(w.sports || {}).some(sessions => sessions.some(session =>
+      (session.items || []).some(exercise => (exercise.sets || []).some(set => !!set.recoveryStartedAt))
+    ))
+  ));
+
+  if (hasRunningTimer && !recoveryTicker) {
+    recoveryTicker = setInterval(() => {
+      document.querySelectorAll('[data-recovery-time]').forEach(el => {
+        const parts = el.getAttribute('data-recovery-time').split('-').map(Number);
+        const [cycleIndex, weekIndex, sessionIndex, exerciseIndex, setIndex] = parts;
+        const set = db.cycles[cycleIndex]?.weeks[weekIndex]?.sports?.pesi?.[sessionIndex]?.items?.[exerciseIndex]?.sets?.[setIndex];
+        if (set) el.textContent = formatRecoveryTime(getRecoverySeconds(set));
+      });
+      const stillRunning = db.cycles.some(c => c.weeks.some(w =>
+        Object.values(w.sports || {}).some(sessions => sessions.some(session =>
+          (session.items || []).some(exercise => (exercise.sets || []).some(set => !!set.recoveryStartedAt))
+        ))
+      ));
+      if (!stillRunning) {
+        clearInterval(recoveryTicker);
+        recoveryTicker = null;
+      }
+    }, 250);
+  }
 }
 
 function adjustSetVal(sIdx, ei, setIdx, field, delta) {
@@ -840,7 +926,7 @@ function toggleDone(sIdx, ei, setIdx) {
 function addSet(sIdx, ei) {
   let e = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei];
   let last = e.sets[e.sets.length-1] || { plannedKg: e.kg, plannedReps: 6 };
-  e.sets.push({ plannedKg: last.plannedKg, plannedReps: last.plannedReps, actualKg: '', actualReps: '', done: false });
+  e.sets.push({ plannedKg: last.plannedKg, plannedReps: last.plannedReps, actualKg: '', actualReps: '', done: false, recoverySeconds: 0 });
   save(); logExercise(sIdx, ei);
 }
 
@@ -869,7 +955,10 @@ function openCardioSession(sIdx) {
       <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Note</label>
       <textarea id="cardioNotes" placeholder="Sensazioni..." rows="2" oninput="saveSessionNotes('${currentSport}', ${sIdx}, this.value)">${s.notes || ''}</textarea>
     </div>
-    <button class="btn-gold" onclick="finishSession('${currentSport}',${sIdx})">Salva Sessione</button>
+    <div style="display:flex; gap:8px;">
+      <button class="btn-secondary" style="flex:1; color:#dc2626; border-color:#fecaca;" onclick="deleteSession(${sIdx})">🗑️ Elimina sessione</button>
+      <button class="btn-gold" style="flex:2;" onclick="finishSession('${currentSport}',${sIdx})">Salva Sessione</button>
+    </div>
   `);
 }
 
@@ -905,8 +994,8 @@ function renderProgress() {
   let detailsHtml = h.length ? `
     <div style="margin-top:10px; font-size:0.78rem; color:var(--text-muted);">
       <b>Storico registrazioni:</b>
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
-        ${h.map(x => `<span style="background:#f1f5f9; padding:4px 8px; border-radius:8px; border:1px solid var(--border-subtle);"><b>${x.labelReadable}:</b> ${x.kg} kg</span>`).join('')}
+      <div style="display:flex; flex-direction:column; gap:7px; margin-top:7px;">
+        ${h.map(x => `<div style="background:#f1f5f9; padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle);"><b>${x.labelReadable}:</b><div style="margin-top:4px; color:var(--text-main); line-height:1.5;">${x.setsText}</div></div>`).join('')}
       </div>
     </div>
   ` : '';
@@ -928,13 +1017,18 @@ function collectHistory(name) {
     let pesiList = (w.sports && w.sports.pesi) || [];
     pesiList.forEach(s => (s.items || []).forEach(e => {
       if(e.name.toLowerCase() === name.toLowerCase()) {
-        let ss = e.sets.filter(st => st.actualKg !== '' && st.actualReps !== '');
+        let ss = (e.sets || []).filter(st =>
+          st.actualKg !== undefined && st.actualKg !== null && st.actualKg !== '' &&
+          st.actualReps !== undefined && st.actualReps !== null && st.actualReps !== '' &&
+          Number.isFinite(Number(st.actualKg)) && Number.isFinite(Number(st.actualReps))
+        );
         if(ss.length) {
-          let max = Math.max(...ss.map(st => +st.actualKg));
-          out.push({ 
-            labelShort: `C${cx+1}S${wx+1}`, 
-            labelReadable: `${c.name} - ${w.name}`, 
-            kg: max 
+          let max = Math.max(...ss.map(st => Number(st.actualKg)));
+          out.push({
+            labelShort: `C${cx+1}S${wx+1}`,
+            labelReadable: `${c.name} - ${w.name}`,
+            kg: max,
+            setsText: ss.map(st => `${st.actualKg}kg × ${st.actualReps}`).join(' | ')
           });
         }
       }
@@ -992,7 +1086,7 @@ function createCycle() {
           if(s.items) {
             s.items.forEach(e => {
               if(e.sets) {
-                e.sets.forEach(st => { st.actualKg = ''; st.actualReps = ''; st.done = false; });
+                e.sets.forEach(st => { st.actualKg = ''; st.actualReps = ''; st.done = false; st.recoverySeconds = 0; delete st.recoveryStartedAt; });
               }
             });
           }
@@ -1003,6 +1097,25 @@ function createCycle() {
 
   db.cycles.push(clone); ci = db.cycles.length - 1; wi = 0;
   db.activeCycle = ci; db.activeWeek = wi; refresh();
+}
+
+
+function deleteCurrentCycle() {
+  if (db.cycles.length <= 1) {
+    alert('Devi mantenere almeno un ciclo.');
+    return;
+  }
+
+  const cycleName = db.cycles[ci]?.name || `Ciclo ${ci + 1}`;
+  if (!confirm(`Eliminare definitivamente "${cycleName}" e tutte le sue settimane?`)) return;
+
+  db.cycles.splice(ci, 1);
+  ci = 0;
+  wi = 0;
+  db.activeCycle = ci;
+  db.activeWeek = wi;
+  save();
+  refresh();
 }
 
 function downloadFile(blob, filename) {
@@ -1066,7 +1179,9 @@ function exportReportPT() {
                   ? `${s.actualReps} reps`
                   : `${s.plannedReps} reps (previste)`;
 
-                return `[S${idx + 1}: ${kg} x ${reps} ${s.done ? '✓' : '✗'}]`;
+                const recovery = getRecoverySeconds(s);
+                const recoveryText = recovery > 0 ? ` · Recupero ${formatRecoveryTime(recovery)}` : '';
+                return `[S${idx + 1}: ${kg} x ${reps} ${s.done ? '✓' : '✗'}${recoveryText}]`;
               }).join(' ');
 
               textLines.push(`      • ${e.name}: ${seriesText}`);
