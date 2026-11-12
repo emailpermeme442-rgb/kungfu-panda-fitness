@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -14,7 +15,7 @@
   --border-subtle: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #64748b;
-  
+
   --fut-gold: #d97706;
   --fut-gold-subtle: rgba(245, 158, 11, 0.12);
   --fut-cyan: #0891b2;
@@ -212,11 +213,6 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
 }
 .tech-guide-inline h5 { color: #d97706; margin: 8px 0 2px 0; font-size: 0.78rem; text-transform: uppercase; }
 .tech-guide-inline p { color: #64748b; }
-.video-link-btn {
-  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
-  background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
-  padding: 6px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-decoration: none;
-}
 
 @media (max-width: 520px) {
   header {
@@ -297,33 +293,27 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
     </div>
 
     <div class="card" style="padding: 14px 16px;">
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <div style="flex: 1 1 200px;">
+      <div style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
           <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Ciclo Programma</label>
-          <div style="display:flex; gap:5px; align-items:center;">
-            <select id="cycleSelect" onchange="selectCycle(this.value)" style="flex:1; min-width:0;"></select>
-            <button class="btn-secondary" id="deleteCycleBtn" onclick="deleteCurrentCycle()" title="Elimina ciclo" style="padding:10px 9px;">🗑️</button>
-          </div>
+          <select id="cycleSelect" onchange="selectCycle(this.value)" style="width:100%; min-width:0;"></select>
         </div>
-        <div style="flex: 1 1 200px;">
+        <div style="flex: 1;">
           <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px; font-weight: 600;">Settimana</label>
-          <div style="display:flex; gap:5px; align-items:center;">
-            <select id="weekSelect" onchange="selectWeek(+this.value)" style="flex:1; min-width:0;"></select>
-            <button class="btn-secondary" onclick="addWeek()" title="Duplica struttura settimana" style="padding:10px 9px;">＋</button>
-            <button class="btn-secondary" id="deleteWeekBtn" onclick="deleteWeek()" title="Elimina settimana" style="padding:10px 9px;">🗑️</button>
-          </div>
+          <select id="weekSelect" onchange="selectWeek(+this.value)"></select>
         </div>
       </div>
     </div>
 
     <div class="section-header">
       <div class="section-title" id="sportHeaderTitle">Sessioni Pesi</div>
-      <div style="display:flex; gap:6px;">
+      <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+        <button class="btn-secondary" onclick="addWeek()" title="Duplica struttura settimana">＋ Settimana</button>
         <button class="btn-secondary" onclick="addNewSessionPrompt()">＋ Sessione</button>
         <button class="btn-secondary" onclick="createCycle()">＋ Ciclo</button>
+        <button class="btn-secondary" onclick="openDeleteMenu()" title="Elimina settimana, sessione o ciclo" aria-label="Elimina" style="padding:10px 12px; color:#dc2626; border-color:#fecaca; background:#fff1f2;">🗑️</button>
       </div>
-    </div>
-
+    </div>```html
     <div id="workoutList"></div>
   </div>
 
@@ -363,30 +353,26 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
 <script>
 
 const EX_GUIDES = {
-  // === ESERCIZI BASE GIÀ PRESENTI ===
   "Spinte manubri su panca piana": {
     muscles: "Petto · Tricipiti · Deltoide anteriore",
     pos: "Sdraiati, piedi ben piantati a terra, scapole addotte e leggermente depresse.",
     desc: "Porta manubri ai lati del petto. Gomiti a 45-60° dal busto. Spingi verso l'alto con traiettoria leggermente convergente.",
     resp: "Inspira scendendo, espira spingendo.", feel: "Allungamento pettorale in basso e contrazione in spinta.",
-    errors: "Gomiti troppo aperti, polsi piegati, rimbalzo in basso.", detail: "Polsi sopra i gomiti, avambracci verticali.",
-    video: "https://www.youtube.com/shorts/HmTIZM9obqY"
+    errors: "Gomiti troppo aperti, polsi piegati, rimbalzo in basso.", detail: "Polsi sopra i gomiti, avambracci verticali."
   },
   "Chest press neutra": {
     muscles: "Petto · Tricipiti",
     pos: "Impugnature all'altezza del centro petto. Schiena aderente.",
     desc: "Palmi rivolti uno verso l'altro. Estendi le braccia senza bloccare violentemente i gomiti.",
     resp: "Espira spingendo, inspira tornando.", feel: "Pettorale e tricipiti.",
-    errors: "Sollevare le spalle, staccare la schiena.", detail: "Fermati prima che la spalla si sposti in avanti.",
-    video: "https://www.youtube.com/shorts/1lkZmlaVF2s"
+    errors: "Sollevare le spalle, staccare la schiena.", detail: "Fermati prima che la spalla si sposti in avanti."
   },
   "Distensioni inclinata multipower": {
     muscles: "Petto alto · Tricipiti · Deltoide anteriore",
     pos: "Panca inclinata a 30°. Bilanciere verso la parte alta del petto.",
     desc: "Presa leggermente più larga delle spalle. Abbassa lentamente il bilanciere e spingi verso l'alto.",
     resp: "Inspira in discesa, espira in salita.", feel: "Porzione clavicolare del pettorale.",
-    errors: "Panca troppo inclinata, gomiti aperti, polsi piegati.", detail: "30° è l'inclinazione ideale.",
-    video: "https://www.youtube.com/shorts/LXBfLirSEPo"
+    errors: "Panca troppo inclinata, gomiti aperti, polsi piegati.", detail: "30° è l'inclinazione ideale."
   },
   "Alzate laterali a 30°": {
     muscles: "Deltoide laterale", pos: "In piedi, gomiti leggermente flessi.",
@@ -404,15 +390,13 @@ const EX_GUIDES = {
     muscles: "Gran dorsale · Bicipiti", pos: "Seduto, cosce bloccate. Palmi rivolti verso di te.",
     desc: "Tira i gomiti in basso e indietro verso il petto.",
     resp: "Espira tirando, inspira risalendo.", feel: "Dorsali e bicipiti.",
-    errors: "Tirare dietro la nuca, oscillare col busto.", detail: "Guida la trazione con i gomiti.",
-    video: "https://www.youtube.com/shorts/eOboYH4QEto"
+    errors: "Tirare dietro la nuca, oscillare col busto.", detail: "Guida la trazione con i gomiti."
   },
   "Lat pull down": {
     muscles: "Gran dorsale · Grande rotondo · Bicipiti", pos: "Presa prona medio-larga.",
     desc: "Tira i gomiti in basso con busto leggermente inclinato.",
     resp: "Espira tirando, inspira tornando.", feel: "Dorsali.",
-    errors: "Inclinazione eccessiva, trazione dietro nuca.", detail: "Torace ben aperto.",
-    video: "https://www.youtube.com/shorts/3C7hwb_pkxk"
+    errors: "Inclinazione eccessiva, trazione dietro nuca.", detail: "Torace ben aperto."
   },
   "Pulley largo": {
     muscles: "Romboidi · Trapezio medio · Deltoide posteriore", pos: "Seduto, schiena neutra, barra larga.",
@@ -424,8 +408,7 @@ const EX_GUIDES = {
     muscles: "Gran dorsale · Trapezio · Romboidi", pos: "Petto appoggiato al supporto.",
     desc: "Tira le impugnature verso il busto guidando con i gomiti.",
     resp: "Espira tirando, inspira tornando.", feel: "Dorsali e centro schiena.",
-    errors: "Strattoni, staccare il petto.", detail: "Gomiti stretti = dorsali; gomiti larghi = alta schiena.",
-    video: "https://www.youtube.com/watch?v=ICRHNN0Lxac"
+    errors: "Strattoni, staccare il petto.", detail: "Gomiti stretti = dorsali; gomiti larghi = alta schiena."
   },
   "Push down cavo": {
     muscles: "Tricipite brachiale", pos: "Gomiti vicini ai fianchi a 90°.",
@@ -449,15 +432,13 @@ const EX_GUIDES = {
     muscles: "Quadricipiti · Glutei", pos: "Schiena contro lo schienale, piedi larghezza spalle.",
     desc: "Scendi piegando ginocchia e anche, poi spingi salendo.",
     resp: "Inspira scendendo, espira salendo.", feel: "Quadricipiti.",
-    errors: "Talloni sollevati, schiena staccata.", detail: "Piedi più in basso = più quadricipiti.",
-    video: "https://www.youtube.com/shorts/tO_OA41FHuk"
+    errors: "Talloni sollevati, schiena staccata.", detail: "Piedi più in basso = più quadricipiti."
   },
   "Leg curl seduto": {
     muscles: "Femorali · Ischiocrurali", pos: "Seduto, asse rotazione allineato al ginocchio.",
     desc: "Fletti le ginocchia portando i talloni indietro.",
     resp: "Espira flettendo, inspira tornando.", feel: "Posteriore coscia.",
-    errors: "Sollevare il bacino, usare slancio.", detail: "Lavora in allungamento sull'anca.",
-    video: "https://www.youtube.com/watch?v=72xhLTC69kk"
+    errors: "Sollevare il bacino, usare slancio.", detail: "Lavora in allungamento sull'anca."
   },
   "Distensioni Multipower presa stretta": {
     muscles: "Tricipiti · Pettorale", pos: "Presa larghezza spalle sul bilanciere.",
@@ -476,355 +457,204 @@ const EX_GUIDES = {
     desc: "Fletti il gomito portando il manubrio alla spalla.",
     resp: "Espira salendo, inspira scendendo.", feel: "Bicipite concentrato.",
     errors: "Ruotare il busto, muovere il gomito.", detail: "Movimento completamente isolato."
-  },
-
-  // === ESERCIZI AGGIUNTIVI CATALOGO GENERALE ===
-  "Croci ai cavi alti": {
-    muscles: "Petto",
-    pos: "In piedi al centro dei cavi, un piede avanti per stabilità, busto leggermente inclinato.",
-    desc: "Porta le mani verso il basso e al centro mantenendo i gomiti leggermente flessi e bloccati.",
-    resp: "Inspira aprendo, espira chiudendo.", feel: "Contrazione al centro del pettorale.",
-    errors: "Piegare troppo i gomiti trasformando l'esercizio in una spinta.", detail: "Pensa ad abbracciare un grande albero."
-  },
-  "Panca inclinata manubri": {
-    muscles: "Petto alto · Deltoide anteriore · Tricipiti",
-    pos: "Panca a 30°, scapole addotte, piedi saldi a terra.",
-    desc: "Scendi con i manubri fino ai lati del petto alto e spingi verso l'alto convergendo leggermente.",
-    resp: "Inspira in discesa, espira in spinta.", feel: "Fasci alti del pettorale.",
-    errors: "Inclinazione eccessiva a 45° o più, polsi spezzati.", detail: "Mantieni i gomiti a circa 45° rispetto al tronco."
-  },
-  "Rematore con manubrio": {
-    muscles: "Gran dorsale · Romboidi · Bicipiti",
-    pos: "Una mano e un ginocchio in appoggio sulla panca, schiena piatta e parallela al suolo.",
-    desc: "Tira il manubrio verso l'anca guidando il movimento con il gomito vicino al fianco.",
-    resp: "Espira tirando, inspira scendendo.", feel: "Allungamento in basso e contrazione del dorsale in alto.",
-    errors: "Ruotare il busto per slanciare il peso.", detail: "Tira verso la tasca dei pantaloni, non verso la spalla."
-  },
-  "Pullover con manubrio": {
-    muscles: "Gran dorsale · Dentato anteriore · Capo lungo tricipite",
-    pos: "Sdraiato su panca, manubrio tenuto a due mani sopra il petto, gomiti semi-flessi.",
-    desc: "Porta il manubrio dietro la testa fino a sentire un buon allungamento, poi riportalo sopra il petto.",
-    resp: "Inspira scendendo dietro, espira risalendo.", feel: "Allungamento profondo del dorsale.",
-    errors: "Piegare ed estendere i gomiti durante il movimento.", detail: "Mantieni il bacino basso e l'addome attivo."
-  },
-  "Pulley basso presa stretta": {
-    muscles: "Gran dorsale · Romboidi · Trapezio",
-    pos: "Seduto, ginocchia leggermente piegate, schiena dritta, triangolo in mano.",
-    desc: "Tira la maniglia verso l'ombelico avvicinando le scapole senza dondolare.",
-    resp: "Espira tirando, inspira distendendo.", feel: "Spessore centrale della schiena.",
-    errors: "Incurvare la zona lombare o slanciarsi indietro.", detail: "Petto in fuori alla fine della tirata."
-  },
-  "Alzate posteriori su panca inclinata": {
-    muscles: "Deltoide posteriore · Trapezio medio",
-    pos: "Petto appoggiato su panca inclinata a 30-45°, braccia perpendicolari al pavimento.",
-    desc: "Solleva i manubri lateralmente verso l'esterno tenendo i gomiti leggermente flessi.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Parte posteriore della spalla.",
-    errors: "Chiudere troppo le scapole rubando lavoro al deltoide.", detail: "Allontana le mani verso i lati della stanza."
-  },
-  "Face pull al cavo alto": {
-    muscles: "Deltoide posteriore · Cuffia dei rotatori · Trapezio",
-    pos: "In piedi di fronte al cavo alto con corda, presa neutra.",
-    desc: "Tira la corda verso la fronte aprendo i gomiti e ruotando esternamente le spalle.",
-    resp: "Espira tirando, inspira tornando.", feel: "Parte alta e posteriore delle spalle.",
-    errors: "Usare troppo peso e compensare con la schiena.", detail: "I pollici devono puntare indietro a fine movimento."
-  },
-  "Leg extension": {
-    muscles: "Quadricipiti",
-    pos: "Seduto con schiena aderente, rullo sopra le caviglie, ginocchio allineato al perno.",
-    desc: "Estendi completamente le ginocchia contraendo forte i quadricipiti, poi scendi lentamente.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Contrazione intensa sulla parte anteriore della coscia.",
-    errors: "Dare colpi di reni o scendere a peso morto.", detail: "Fai una pausa di 1 secondo in cima.",
-    video: "https://www.youtube.com/watch?v=IZpKu3JyLKs"
-  },
-  "Stacco rumeno (RDL)": {
-    muscles: "Femorali · Glutei · Erettori spinali",
-    pos: "In piedi, bilanciere o manubri davanti alle cosce, ginocchia sbloccate.",
-    desc: "Spingi il bacino indietro mantenendo la schiena neutra fino a metà tibia, poi risali spingendo i glutei.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Tensione forte dietro le cosce (ischiocrurali).",
-    errors: "Arrotondare la schiena o piegare troppo le ginocchia.", detail: "Il peso resta sempre a contatto con le gambe."
-  },
-  "Bulgarian split squat": {
-    muscles: "Quadricipiti · Glutei · Stabilizzatori",
-    pos: "Un piede avanti a terra, collo del piede posteriore appoggiato su una panca.",
-    desc: "Scendi verticalmente piegando il ginocchio anteriore fino a 90°, poi spingi dal tallone.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Lavoro intenso su quadricipite e gluteo della gamba avanti.",
-    errors: "Ginocchio che cede verso l'interno.", detail: "Busto leggermente inclinato per maggiore focus sul gluteo."
-  },
-  "Hip thrust": {
-    muscles: "Grande gluteo · Femorali",
-    pos: "Scapole appoggiate al bordo della panca, bilanciere imbottito sul bacino, piedi larghezza spalle.",
-    desc: "Spingi il bacino verso l'alto fino a portare il tronco parallelo al suolo, contrai e scendi.",
-    resp: "Espira spingendo in alto, inspira scendendo.", feel: "Massima contrazione dei glutei in alto.",
-    errors: "Iperestendere la zona lombare invece di ruotare il bacino.", detail: "Mento verso il petto e tibie verticali in cima."
-  },
-  "Calf raise in piedi": {
-    muscles: "Gastrocnemio · Soleo",
-    pos: "Avampiedi sul gradino, talloni liberi, ginocchia quasi tese.",
-    desc: "Scendi allungando il polpaccio, poi spingi sulle punte fino alla massima estensione.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Bruciore e allungamento profondo nel polpaccio.",
-    errors: "Rimbalzare velocemente senza pausa in basso.", detail: "2 secondi di fermo in massimo allungamento."
-  },
-  "Curl manubri su panca inclinata": {
-    muscles: "Bicipite brachiale (Capo lungo)",
-    pos: "Seduto su panca inclinata a 45-60°, braccia lasciate cadere perpendicolari dietro il busto.",
-    desc: "Fletti i gomiti portando i manubri verso le spalle senza portare i gomiti in avanti.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Allungamento intenso sul bicipite in basso.",
-    errors: "Portare i gomiti in avanti durante la salita.", detail: "Mantieni le spalle ben appoggiate allo schienale."
-  },
-  "Hammer curl (Martello)": {
-    muscles: "Brachiale · Brachioradiale · Bicipite",
-    pos: "In piedi o seduto, palmi rivolti l'uno verso l'altro (presa neutra).",
-    desc: "Fletti il gomito mantenendo il polso neutro fino alla contrazione completa.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Parte esterna del braccio e avambraccio.",
-    errors: "Dondolare con la schiena.", detail: "Ottimo per dare spessore al braccio."
-  },
-  "French press cavo alto con corda": {
-    muscles: "Tricipite brachiale (Capo lungo)",
-    pos: "Di spalle al cavo basso/medio con corda dietro la testa, gomiti rivolti in alto.",
-    desc: "Estendi completamente gli avambracci verso l'alto separando leggermente le estremità della corda.",
-    resp: "Espira estendendo, inspira flettendo.", feel: "Allungamento completo del tricipite.",
-    errors: "Allargare eccessivamente i gomiti verso l'esterno.", detail: "Controlla bene la fase negativa dietro la nuca."
-  },
-  "Crunch al cavo alto": {
-    muscles: "Retto dell'addome",
-    pos: "In ginocchio di fronte al cavo alto, corda tenuta ai lati della testa.",
-    desc: "Arrotola la colonna portando i gomiti verso le cosce contraendo l'addome, bacino fermo.",
-    resp: "Espira chiudendo, inspira risalendo.", feel: "Contrazione profonda degli addominali.",
-    errors: "Tirare con le braccia o sedersi sui talloni.", detail: "Immagina di portare le costole verso il pube."
-  },
-
-  // === ESERCIZI PROGRAMMA 9 (MOBILITÀ, ADDOME, PESI, EMOM CORPO LIBERO) ===
+  }
+  ,
   "Extrarotazioni sul fianco": {
-    muscles: "Cuffia dei rotatori (Infraspinato · Piccolo rotondo)",
-    pos: "Sdraiati su un fianco, gomito superiore piegato a 90° e ben aderente al fianco.",
-    desc: "Ruota l'avambraccio verso l'alto mantenendo il gomito fermo sul fianco, poi scendi controllato (1x15 per lato).",
-    resp: "Espira ruotando verso l'alto, inspira scendendo.", feel: "Attivazione profonda nella parte posteriore della spalla.",
-    errors: "Staccare il gomito dal corpo o ruotare il busto indietro.", detail: "Ideale come attivazione pre-allenamento.",
-    video: "https://www.youtube.com/watch?v=3MXctwrurv8"
+    muscles: "Cuffia dei rotatori · Infraspinato · Piccolo rotondo",
+    pos: "Sdraiati su un fianco, gomito superiore piegato a 90° e aderente al fianco.",
+    desc: "Ruota l’avambraccio verso l’alto mantenendo fermo il gomito, poi scendi lentamente.",
+    resp: "Espira ruotando verso l’alto, inspira tornando.", feel: "Rotatori esterni della spalla.",
+    errors: "Staccare il gomito dal fianco o ruotare il busto.", detail: "Usa carico leggero e movimento controllato."
   },
   "Chiusura scapole prono a terra": {
     muscles: "Trapezio medio e inferiore · Romboidi",
-    pos: "Sdraiato prono (a pancia in giù), fronte appoggiata, braccia lungo i fianchi o a W.",
-    desc: "Solleva leggermente le braccia e avvicina le scapole tra loro verso il basso, poi rilascia lentamente (1x20).",
-    resp: "Espira chiudendo le scapole, inspira tornando.", feel: "Attivazione tra le scapole senza tensioni al collo.",
-    errors: "Sollevare le spalle verso le orecchie o inarcare troppo la zona lombare.", detail: "Pensa a portare le scapole nelle tasche posteriori.",
-    video: "https://www.youtube.com/watch?v=U5x-VnliVP4"
+    pos: "Prono a terra, fronte appoggiata, braccia lungo i fianchi o in posizione a W.",
+    desc: "Solleva leggermente le braccia e avvicina le scapole tra loro e verso il basso; rilascia lentamente.",
+    resp: "Respira regolarmente.", feel: "Parte centrale e inferiore della schiena alta.",
+    errors: "Inarcare la zona lombare o sollevare eccessivamente le spalle.", detail: "Movimento piccolo, senza slancio."
   },
-  "Retroversione ed anteroversione del bacino": {
+  "Retroversione e anteroversione del bacino": {
     muscles: "Mobilità lombare · Core · Pavimento pelvico",
     pos: "Supino con ginocchia piegate e piedi a terra, oppure in quadrupedia.",
-    desc: "Alterna lo schiacciamento della zona lombare a terra (retroversione) al leggero inarcamento (anteroversione) in modo fluido (1x20).",
-    resp: "Espira in retroversione, inspira in anteroversione.", feel: "Sblocco e controllo del bacino e della bassa schiena.",
-    errors: "Muovere tutto il tronco invece di isolare il bacino.", detail: "Movimento lento e consapevole.",
-    video: "https://www.youtube.com/watch?v=pt_F5lU2iUM"
+    desc: "Alterna lo schiacciamento della zona lombare a terra alla lieve inarcatura, in modo fluido.",
+    resp: "Espira in retroversione, inspira in anteroversione.", feel: "Mobilità controllata del bacino e della colonna lombare.",
+    errors: "Forzare il movimento o muovere tutto il busto.", detail: "Ampiezza confortevole e senza dolore."
   },
   "Karani routine": {
     muscles: "Mobilità · Circolazione · Scarico lombare",
     pos: "Sdraiati supini con le gambe verticali appoggiate a una parete o sollevate.",
-    desc: "Mantenere la posizione rilassata respirando profondamente per favorire il ritorno venoso e lo scarico della schiena.",
-    resp: "Respirazione diaframmatica lenta e profonda.", feel: "Leggerezza alle gambe e rilassamento lombare.",
-    errors: "Tendere i muscoli o bloccare la respirazione.", detail: "Ottimo defaticamento a fine sessione.",
-    video: "https://www.youtube.com/watch?v=DzONedGzUzY"
+    desc: "Mantieni la posizione rilassata respirando profondamente.",
+    resp: "Respirazione lenta e regolare.", feel: "Rilassamento e scarico delle gambe e della schiena.",
+    errors: "Forzare la posizione o mantenerla se provoca formicolio.", detail: "Interrompi se compaiono fastidio o intorpidimento."
   },
   "Allungamento lombare": {
     muscles: "Erettori spinali · Quadrato dei lombi · Glutei",
-    pos: "Supino, ginocchia al petto oppure in posizione del fanciullo (Child's pose) a terra.",
-    desc: "Mantieni l'allungamento dolce della zona lombare per 30 secondi respirando profondamente.",
-    resp: "Lenta e regolare, rilassando ad ogni espirazione.", feel: "Distensione della bassa schiena.",
-    errors: "Forzare l'allungamento trattenendo il respiro.", detail: "1x30 sec a fine allenamento.",
-    video: "https://www.youtube.com/watch?v=1GAPD_McHm4"
+    pos: "Supino con ginocchia al petto oppure in posizione del fanciullo.",
+    desc: "Mantieni un allungamento dolce della zona lombare per circa 30 secondi, respirando profondamente.",
+    resp: "Respirazione lenta e profonda.", feel: "Allungamento leggero, mai doloroso.",
+    errors: "Tirare con forza le ginocchia o trattenere il respiro.", detail: "Non cercare il massimo allungamento."
   },
   "Situp su panca": {
-    muscles: "Retto dell'addome · Flessori dell'anca",
-    pos: "Seduto su panca (piana o declinata), piedi bloccati, mani al petto o dietro la nuca.",
-    desc: "Scendi controllando la discesa srotolando la schiena e risali flettendo il busto (3x12-15).",
-    resp: "Espira salendo, inspira scendendo.", feel: "Lavoro completo della parete addominale.",
-    errors: "Tirare il collo con le mani o rimbalzare in basso.", detail: "Controlla soprattutto la fase negativa.",
-    video: "https://www.youtube.com/watch?v=GCEpNIEPrgk"
+    muscles: "Retto dell’addome · Flessori dell’anca",
+    pos: "Seduto su panca piana o declinata, piedi stabilizzati, mani al petto.",
+    desc: "Scendi controllando la discesa e srotolando la schiena; risali flettendo il busto.",
+    resp: "Espira salendo, inspira scendendo.", feel: "Addome e flessori dell’anca.",
+    errors: "Usare slancio o tirare la testa con le mani.", detail: "Riduci ampiezza se senti la zona lombare."
   },
   "Crunch inverso su panca": {
-    muscles: "Retto dell'addome (porzione inferiore)",
-    pos: "Sdraiato supino su panca, mani afferrano il bordo dietro la testa per stabilità.",
-    desc: "Porta le ginocchia al petto sollevando il bacino dalla panca, poi riappoggia lentamente (3x12-15).",
-    resp: "Espira sollevando il bacino, inspira scendendo.", feel: "Contrazione intensa del basso addome.",
-    errors: "Inarcare la zona lombare lasciando cadere le gambe.", detail: "Arrotola il bacino verso lo sterno.",
-    video: "https://www.youtube.com/watch?v=jTc63vJJkK4"
+    muscles: "Retto dell’addome · Enfasi porzione inferiore",
+    pos: "Supino su panca, mani ai bordi per stabilità.",
+    desc: "Porta le ginocchia al petto e solleva il bacino dalla panca; riappoggia lentamente.",
+    resp: "Espira sollevando il bacino.", feel: "Contrazione addominale con retroversione del bacino.",
+    errors: "Slanciare le gambe o oscillare.", detail: "Il movimento parte dal bacino, non dalla spinta delle gambe."
   },
   "Crunch V-up": {
-    muscles: "Retto dell'addome · Core completo",
-    pos: "Sdraiato supino a terra, braccia tese oltre la testa e gambe distese.",
-    desc: "Solleva contemporaneamente busto e gambe tese formando una V fino a toccare le punte dei piedi (3x15-20).",
-    resp: "Espira chiudendo a V, inspira riaprendo.", feel: "Forte tensione su tutto l'addome.",
-    errors: "Piegare eccessivamente le ginocchia o slanciare le braccia.", detail: "Mantieni l'addome sempre attivo.",
-    video: "https://www.youtube.com/watch?v=_3XfHJIQp3o"
+    muscles: "Retto dell’addome · Core",
+    pos: "Supino a terra, braccia oltre la testa e gambe distese.",
+    desc: "Solleva insieme busto e gambe, avvicinando mani e piedi; torna lentamente.",
+    resp: "Espira nella salita, inspira nella discesa.", feel: "Addome e controllo del tronco.",
+    errors: "Usare slancio o inarcare la zona lombare.", detail: "Piega leggermente le ginocchia se necessario."
+  },
+  "Situp controllato": {
+    muscles: "Retto dell’addome · Core",
+    pos: "Supino, ginocchia piegate e piedi a terra.",
+    desc: "Sali senza slancio e scendi lentamente mantenendo il controllo.",
+    resp: "Espira salendo, inspira scendendo.", feel: "Addome durante tutta la ripetizione.",
+    errors: "Strappare in salita o ricadere in discesa.", detail: "Mantieni ritmo regolare."
+  },
+  "Tocco caviglie in karani": {
+    muscles: "Retto dell’addome · Obliqui",
+    pos: "Supino con gambe sollevate in verticale.",
+    desc: "Solleva spalle e scapole da terra e raggiungi alternativamente le caviglie.",
+    resp: "Espira verso la caviglia.", feel: "Addome alto e obliqui.", errors: "Tirare il collo o oscillare.", detail: "Mantieni le gambe stabili."
+  },
+  "Crunch inverso e candela": {
+    muscles: "Retto dell’addome · Core",
+    pos: "Supino, braccia lungo i fianchi e palmi a terra.",
+    desc: "Porta le ginocchia al petto e spingi i piedi verso il soffitto sollevando il bacino; scendi controllato.",
+    resp: "Espira nella salita.", feel: "Addome e controllo del bacino.",
+    errors: "Slancio eccessivo o carico sul collo.", detail: "Non caricare il peso sulla cervicale."
+  },
+  "Crocifix": {
+    muscles: "Addome · Obliqui · Flessori dell’anca",
+    pos: "Supino a terra, braccia aperte a croce e gambe distese.",
+    desc: "Solleva una gamba e il busto portando la mano opposta verso il piede; alterna i lati.",
+    resp: "Espira durante la diagonale.", feel: "Addome e rotazione controllata del tronco.",
+    errors: "Strappare o forzare la zona lombare.", detail: "Riduci ampiezza se perdi controllo."
   },
   "Distensioni panca": {
     muscles: "Pettorale · Deltoide anteriore · Tricipiti",
-    pos: "Sdraiato su panca piana, scapole addotte, piedi saldi a terra, arco lombare fisiologico.",
-    desc: "Abbassa il bilanciere fino al centro-basso petto con gomiti a ~45-60° e spingi con decisione verso l'alto (3x6-8).",
-    resp: "Inspira scendendo, espira spingendo.", feel: "Forza e spinta piena del pettorale.",
-    errors: "Rimbalzare sul petto o perdere l'assetto delle scapole.", detail: "Polsi dritti in linea con gli avambracci.",
-    video: "https://www.youtube.com/shorts/lyRHYqIu-f0"
+    pos: "Supino su panca piana, scapole addotte, piedi saldi e polsi sopra i gomiti.",
+    desc: "Abbassa il bilanciere verso il centro-basso petto con gomiti a circa 45–60°, poi spingi.",
+    resp: "Inspira scendendo, espira spingendo.", feel: "Pettorali, tricipiti e deltoide anteriore.",
+    errors: "Rimbalzo sul petto, polsi piegati, gomiti eccessivamente aperti.", detail: "Usa sicurezze o assistenza quando necessario."
   },
   "Incline press": {
     muscles: "Petto alto · Deltoide anteriore · Tricipiti",
-    pos: "Seduto sulla macchina Incline Press, schiena aderente, impugnature all'altezza del petto alto.",
-    desc: "Spingi le leve verso l'alto e avanti senza staccare le spalle dallo schienale, torna controllando.",
-    resp: "Espira spingendo, inspira tornando.", feel: "Contrazione dei fasci clavicolari del petto.",
-    errors: "Anteporre le spalle a fine spinta.", detail: "Mantieni il petto aperto durante tutto il set.",
-    video: "https://www.youtube.com/shorts/Mbi33cOarm4"
+    pos: "Seduto alla macchina, schiena aderente e impugnature all’altezza del petto alto.",
+    desc: "Spingi le leve avanti e in alto senza sollevare le spalle; ritorna lentamente.",
+    resp: "Espira spingendo, inspira tornando.", feel: "Parte clavicolare del pettorale.",
+    errors: "Staccare la schiena o bloccare bruscamente i gomiti.", detail: "Regola sedile e traiettoria prima di iniziare."
   },
   "Spider curl supino": {
-    muscles: "Bicipite brachiale (Capo breve)",
-    pos: "Petto appoggiato su panca inclinata a 45°, braccia perpendicolari a terra con presa supina.",
-    desc: "Fletti i gomiti portando i manubri verso le spalle e mantieni 2 secondi di isometria in alto (3x10).",
-    resp: "Espira salendo, inspira scendendo.", feel: "Picco di contrazione massimo sul bicipite.",
-    errors: "Portare i gomiti indietro per aiutarsi.", detail: "2 secondi di fermo in contrazione ad ogni ripetizione.",
-    video: "https://www.youtube.com/watch?v=3pBndM7z4Gs"
+    muscles: "Bicipite brachiale · Enfasi capo breve",
+    pos: "Petto appoggiato su panca inclinata, braccia perpendicolari al pavimento, presa supina.",
+    desc: "Fletti i gomiti portando i manubri verso le spalle; mantieni breve contrazione in alto.",
+    resp: "Espira salendo, inspira scendendo.", feel: "Bicipiti senza oscillare col busto.",
+    errors: "Muovere le spalle o usare slancio.", detail: "Mantieni braccia ferme."
   },
   "Curl bilanciere": {
     muscles: "Bicipite brachiale · Brachiale",
-    pos: "In piedi, presa supina larghezza spalle, gomiti fermi lungo i fianchi.",
-    desc: "Fletti gli avambracci portando il bilanciere verso le spalle senza oscillare con la schiena.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Lavoro pieno e carico diretto sui bicipiti.",
-    errors: "Slanciare il busto o portare i gomiti troppo avanti.", detail: "Discesa controllata fino alla quasi completa estensione.",
-    video: "https://www.youtube.com/shorts/Aw49VTxfDnM"
+    pos: "In piedi, presa supina alla larghezza delle spalle e gomiti vicini ai fianchi.",
+    desc: "Fletti i gomiti portando il bilanciere verso le spalle senza oscillare con la schiena.",
+    resp: "Espira salendo, inspira scendendo.", feel: "Bicipiti e brachiale.",
+    errors: "Slanciare il busto o portare i gomiti avanti.", detail: "Mantieni polsi neutri."
   },
   "Spinte in basso con corda": {
-    muscles: "Tricipite brachiale (Capo laterale e mediale)",
-    pos: "In piedi davanti al cavo alto, gomiti bloccati ai fianchi.",
-    desc: "Estendi gli avambracci verso il basso aprendo leggermente le estremità della corda nel punto finale (3x12-15).",
-    resp: "Espira spingendo giù, inspira risalendo.", feel: "Bruciore e contrazione netta dei tricipiti.",
-    errors: "Allargare i gomiti o spingere con il peso del corpo.", detail: "Apri la corda a fine corsa per la massima contrazione.",
-    video: "https://www.youtube.com/shorts/DcIb5xj-5j0"
+    muscles: "Tricipite brachiale · Capi laterale e mediale",
+    pos: "In piedi al cavo alto, gomiti fermi lungo i fianchi.",
+    desc: "Estendi gli avambracci verso il basso e apri leggermente le estremità della corda in chiusura.",
+    resp: "Espira estendendo.", feel: "Contrazione dei tricipiti.", errors: "Muovere i gomiti o inclinare il busto.", detail: "Mantieni spalle basse."
   },
   "Asian squat multipower": {
     muscles: "Quadricipiti · Glutei · Adduttori · Mobilità caviglie",
-    pos: "Al multipower, piedi leggermente più larghi delle spalle con punte extra-ruotate.",
-    desc: "Scendi in accosciata profonda portando il bacino tra i talloni, poi risali spingendo dal centro del piede.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Massimo allungamento e spinta profonda di gambe e glutei.",
-    errors: "Sollevare i talloni o perdere la neutralità lombare.", detail: "Sfrutta la guida del multipower per restare verticale.",
-    video: "https://www.youtube.com/shorts/2bl-PZxHsEg"
+    pos: "Al multipower, piedi poco più larghi delle spalle e punte leggermente aperte.",
+    desc: "Scendi in accosciata profonda mantenendo talloni a terra e ginocchia in linea con le punte; risali.",
+    resp: "Inspira scendendo, espira risalendo.", feel: "Quadricipiti, glutei e mobilità di caviglia.",
+    errors: "Talloni che si sollevano o ginocchia che collassano.", detail: "Usa profondità compatibile con mobilità e controllo."
   },
   "Lento con manubri": {
     muscles: "Deltoide anteriore e laterale · Tricipiti",
-    pos: "Seduto su panca a 75-80°, schiena aderente, manubri all'altezza delle orecchie.",
-    desc: "Spingi i manubri sopra la testa senza farli sbattere, poi scendi fino all'altezza del mento/orecchie.",
-    resp: "Espira spingendo, inspira scendendo.", feel: "Lavoro pieno sui deltoidi.",
-    errors: "Inarcare eccessivamente la schiena o aprire troppo i gomiti.", detail: "Gomiti leggermente anteposti (piano scapolare).",
-    video: "https://www.youtube.com/shorts/xMV7lUYTmyI"
+    pos: "Seduto su panca inclinata, schiena aderente e manubri all’altezza delle orecchie.",
+    desc: "Spingi i manubri sopra la testa senza farli urtare; scendi in modo controllato.",
+    resp: "Espira spingendo, inspira scendendo.", feel: "Spalle e tricipiti.",
+    errors: "Inarcare la schiena o scendere troppo.", detail: "Mantieni addome attivo."
   },
   "Posteriori alla peck back": {
     muscles: "Deltoide posteriore · Trapezio medio · Romboidi",
-    pos: "Seduto frontalmente alla macchina Peck Back (Reverse Fly), petto contro lo schienale.",
-    desc: "Apri le braccia verso dietro mantenendo i gomiti leggermente flessi e le spalle basse (3x15).",
-    resp: "Espira aprendo, inspira chiudendo.", feel: "Isolamento preciso sulla parte posteriore della spalla.",
-    errors: "Alzare le spalle verso le orecchie.", detail: "Spingi le mani lontano verso l'esterno.",
-    video: "https://www.youtube.com/watch?v=dd0UKd42ND8"
+    pos: "Seduto alla macchina reverse fly, petto contro lo schienale.",
+    desc: "Apri le braccia verso dietro mantenendo gomiti morbidi e spalle basse.",
+    resp: "Espira aprendo.", feel: "Deltoide posteriore e parte alta della schiena.",
+    errors: "Slancio o spalle sollevate.", detail: "Evita di inarcare la zona lombare."
   },
   "Military press in ginocchio al multipower": {
-    muscles: "Deltoidi · Tricipiti · Core (stabilizzazione)",
-    pos: "In ginocchio su tappetino davanti al multipower, glutei e addome ben contratti.",
-    desc: "Spingi il bilanciere dal mento fin sopra la testa mantenendo il busto perfettamente fermo (3x10-12).",
-    resp: "Espira spingendo, inspira scendendo.", feel: "Spinta pura di spalle senza aiuto delle gambe.",
-    errors: "Iperestendere la zona lombare in spinta.", detail: "Tieni glutei e addome stretti per bloccare il bacino.",
-    video: "https://www.youtube.com/shorts/EYS7V6nRmSE"
+    muscles: "Deltoidi · Tricipiti · Core",
+    pos: "In ginocchio davanti al multipower, glutei e addome contratti.",
+    desc: "Spingi il bilanciere dal mento sopra la testa mantenendo il busto stabile.",
+    resp: "Espira spingendo.", feel: "Spalle e stabilizzazione del core.",
+    errors: "Inarcare la schiena o spingere col bacino.", detail: "Usa carico gestibile e traiettoria libera dal viso."
   },
   "Pulley (4 sec ritorno)": {
     muscles: "Gran dorsale · Romboidi · Trapezio medio",
-    pos: "Seduto al pulley, schiena neutra, petto aperto.",
-    desc: "Tira la maniglia verso l'addome e controlla la fase di ritorno contando 4 secondi (3x10).",
-    resp: "Espira tirando, inspira nei 4 secondi di ritorno.", feel: "Controllo eccentrico e spessore dorsale.",
-    errors: "Lasciar tornare il peso velocemente o incurvare la schiena.", detail: "Rispetta i 4 secondi reali nella fase negativa.",
-    video: "https://www.youtube.com/watch?v=a0-VyH4Qjvw"
+    pos: "Seduto al pulley, schiena neutra e petto aperto.",
+    desc: "Tira la maniglia verso l’addome e controlla il ritorno per quattro secondi.",
+    resp: "Espira tirando, inspira nel ritorno.", feel: "Dorsali e parte centrale della schiena.",
+    errors: "Oscillare col busto o accelerare il ritorno.", detail: "Conta quattro secondi nella fase eccentrica."
   },
   "Rematore multipower": {
     muscles: "Gran dorsale · Trapezio · Romboidi · Deltoide posteriore",
-    pos: "Busto inclinato a ~45°, schiena neutra, presa prona leggermente più larga delle spalle.",
-    desc: "Tira il bilanciere guidato verso l'addome basso chiudendo le scapole (3x10-12).",
-    resp: "Espira tirando, inspira scendendo.", feel: "Forte attivazione di tutta la muscolatura dorsale.",
-    errors: "Alzare il busto durante la tirata.", detail: "Guida il movimento con i gomiti.",
-    video: "https://www.youtube.com/shorts/2wJy-kPj5Do"
+    pos: "Busto inclinato, schiena neutra e presa prona.",
+    desc: "Tira il bilanciere verso l’addome basso chiudendo le scapole.",
+    resp: "Espira tirando.", feel: "Dorsali e retrattori scapolari.",
+    errors: "Arrotondare la schiena o strattonare.", detail: "Mantieni busto e bacino stabili."
   },
   "Piegamenti per tricipiti con rialzi": {
     muscles: "Tricipiti · Pettorale · Deltoide anteriore",
-    pos: "Mani su due rialzi (step/manubri/panca), corpo in linea come un plank, gomiti stretti.",
-    desc: "Scendi portando il petto tra i rialzi mantenendo i gomiti vicini ai fianchi, poi distendi completamente.",
-    resp: "Inspira scendendo, espira spingendo.", feel: "Lavoro intenso sui tricipiti e maggiore escursione.",
-    errors: "Aprire i gomiti verso l'esterno o far cedere il bacino.", detail: "I rialzi aumentano il range di movimento.",
-    video: "https://www.youtube.com/shorts/eLTeYuxJizk"
+    pos: "Mani su due rialzi, corpo in linea e gomiti vicini ai fianchi.",
+    desc: "Scendi portando il petto tra i rialzi e poi distendi le braccia.",
+    resp: "Inspira scendendo, espira risalendo.", feel: "Tricipiti e petto.", errors: "Gomiti molto aperti o bacino che cede.", detail: "Scegli altezza che consenta controllo."
   },
   "French press bilanciere": {
     muscles: "Tricipite brachiale",
-    pos: "Sdraiato su panca piana, bilanciere (dritto o EZ) impugnato larghezza spalle.",
-    desc: "Fletti i gomiti portando il bilanciere verso la fronte/dietro la testa, poi estendi (3x10-12).",
-    resp: "Inspira scendendo, espira estendendo.", feel: "Allungamento e spinta dei tricipiti.",
-    errors: "Allargare eccessivamente i gomiti.", detail: "Mantieni i bracci superiori perpendicolari o leggermente inclinati indietro.",
-    video: "https://www.youtube.com/watch?v=H-9dCYqoIY0"
+    pos: "Supino su panca, bilanciere impugnato alla larghezza delle spalle.",
+    desc: "Fletti i gomiti portando il bilanciere verso fronte o dietro la testa, poi estendi.",```html
+    resp: "Inspira flettendo, espira estendendo.", feel: "Tricipite, soprattutto capo lungo.",
+    errors: "Aprire i gomiti o muovere le spalle.", detail: "Mantieni gomiti stabili."
   },
   "Hammer curl corda": {
     muscles: "Brachiale · Brachioradiale · Bicipite",
-    pos: "In piedi davanti al cavo basso con corda, presa neutra (pollici in alto).",
-    desc: "Fletti i gomiti portando le mani verso le spalle con tensione continua del cavo (3x12-15).",
-    resp: "Espira salendo, inspira scendendo.", feel: "Pumping costante su bicipite e avambraccio.",
-    errors: "Muovere i gomiti in avanti o usare lo slancio del busto.", detail: "Non far toccare le piastre in basso per mantenere tensione.",
-    video: "https://www.youtube.com/shorts/VE0YhfSe960"
-  },
-  "Situp controllato": {
-    muscles: "Retto dell'addome · Core",
-    pos: "Supino a terra, ginocchia piegate, piedi a terra.",
-    desc: "Sali controllando il movimento senza slancio e scendi lentamente (EMOM 12 reps).",
-    resp: "Espira salendo, inspira scendendo.", feel: "Controllo addominale costante.",
-    errors: "Darsi la spinta con le braccia.", detail: "Esecuzione fluida per gestire i tempi dell'EMOM.",
-    video: "https://www.youtube.com/shorts/3bE9zOM1haM"
+    pos: "In piedi al cavo basso con corda, presa neutra.",
+    desc: "Fletti i gomiti portando le mani verso le spalle mantenendo tensione continua.",
+    resp: "Espira salendo, inspira scendendo.", feel: "Brachiale e avambraccio.", errors: "Oscillare o spostare i gomiti.", detail: "Polsi neutri e spalle ferme."
   },
   "Asian squat": {
     muscles: "Quadricipiti · Glutei · Caviglie · Adduttori",
-    pos: "Piedi larghezza spalle o poco più, punte leggermente aperte.",
-    desc: "Scendi in squat profondo mantenendo i talloni ben adesi a terra e il busto il più verticale possibile (EMOM 15 reps).",
-    resp: "Inspira in discesa, espira risalendo.", feel: "Massimo allungamento e attivazione di gambe e glutei.",
-    errors: "Sollevare i talloni o chiudere le ginocchia verso l'interno.", detail: "Eccellente sia come mobilità che per volume metabolico.",
-    video: "https://www.youtube.com/watch?v=32D3d3kbkHU"
-  },
-  "Tocco caviglie in karani": {
-    muscles: "Retto dell'addome · Obliqui",
-    pos: "Sdraiato supino con gambe sollevate in verticale.",
-    desc: "Solleva spalle e scapole da terra e tocca alternativamente le caviglie destra e sinistra (EMOM 30 reps totali).",
-    resp: "Espira ad ogni tocco, respira in modo ritmico.", feel: "Bruciore continuo su addome alto e obliqui.",
-    errors: "Tirare il collo in avanti.", detail: "Guarda verso le punte dei piedi.",
-    video: "https://www.youtube.com/shorts/awcwmUb7Z1I"
+    pos: "Piedi alla larghezza delle spalle o poco più, punte leggermente aperte.",
+    desc: "Scendi in squat profondo mantenendo i talloni a terra e il busto il più verticale possibile.",
+    resp: "Inspira scendendo, espira risalendo.", feel: "Mobilità di caviglie e anche, quadricipiti e glutei.",
+    errors: "Talloni sollevati o collasso delle ginocchia.", detail: "Usa un supporto se serve per mantenere equilibrio."
   },
   "Piegamenti sulle braccia": {
     muscles: "Petto · Tricipiti · Deltoide anteriore · Core",
-    pos: "Mani leggermente più larghe delle spalle, corpo in plank perfetto.",
-    desc: "Scendi fino a sfiorare il pavimento con il petto e risali distendendo le braccia (EMOM 12 reps).",
-    resp: "Inspira scendendo, espira spingendo.", feel: "Spinta esplosiva e tenuta del core.",
-    errors: "Inarcare la bassa schiena o aprire troppo i gomiti a T.", detail: "Mantieni glutei e addome attivi.",
-    video: "https://www.youtube.com/shorts/hEoyMX-wn9Q"
-  },
-  "Crunch inverso e candela": {
-    muscles: "Retto dell'addome · Core",
-    pos: "Sdraiato supino, braccia lungo i fianchi a terra.",
-    desc: "Porta le ginocchia al petto e spingi i piedi verticalmente verso il soffitto sollevando il bacino (candela), poi scendi controllato (EMOM 15 reps).",
-    resp: "Espira spingendo verso l'alto, inspira scendendo.", feel: "Intensa contrazione su tutto l'addome.",
-    errors: "Lasciar cadere il bacino pesantemente a terra.", detail: "Controlla la discesa vertebra dopo vertebra.",
-    video: "https://www.youtube.com/shorts/2Ov-LMFrnFM"
+    pos: "Mani poco più larghe delle spalle, corpo in linea come un plank.",
+    desc: "Scendi fino a sfiorare il pavimento con il petto e risali mantenendo il corpo allineato.",
+    resp: "Inspira scendendo, espira risalendo.", feel: "Petto e tricipiti.", errors: "Bacino che cede o gomiti troppo aperti.", detail: "Adatta inclinazione e ampiezza al livello."
   },
   "Squat sumo": {
     muscles: "Glutei · Adduttori · Quadricipiti",
-    pos: "Piedi molto più larghi delle spalle, punte ruotate verso l'esterno a ~45°.",
-    desc: "Scendi verticalmente spingendo le ginocchia in fuori in linea con le punte dei piedi (EMOM 15 reps).",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Lavoro marcato su interno coscia e glutei.",
-    errors: "Lasciare collassare le ginocchia verso l'interno.", detail: "Busto eretto e spinta dai talloni.",
-    video: "https://www.youtube.com/watch?v=k-p0hNzafpQ"
-  },
-  "Crocifix": {
-    muscles: "Addome completo · Obliqui · Flessori dell'anca",
-    pos: "Sdraiato supino a terra con braccia aperte a croce e gambe tese.",
-    desc: "Solleva una gamba tesa e il busto portando la mano opposta a toccare il piede, alternando i lati in modo controllato (EMOM 15 reps).",
-    resp: "Espira salendo in torsione, inspira tornando a croce.", feel: "Attivazione diagonale di tutto il core.",
-    errors: "Slanciare la gamba senza controllare la discesa.", detail: "Mantieni l'altro braccio ben saldo a terra per equilibrio.",
-    video: "https://www.youtube.com/watch?v=AVybQCbRuio"
+    pos: "Piedi molto più larghi delle spalle, punte ruotate verso l’esterno.",
+    desc: "Scendi verticalmente mantenendo ginocchia in linea con le punte, poi risali.",
+    resp: "Inspira scendendo, espira risalendo.", feel: "Glutei e adduttori.", errors: "Ginocchia che collassano o schiena che si flette.", detail: "Trova una stance stabile e confortevole."
   }
 };
 
@@ -880,6 +710,7 @@ const KEY = 'kungfu_panda_fut_v9';
 
 let db;
 try {
+  // Migrazione automatica da v8 a v9 se i vecchi dati esistono
   if (!localStorage.getItem(KEY) && localStorage.getItem(OLD_KEY)) {
     localStorage.setItem(KEY, localStorage.getItem(OLD_KEY));
   }
@@ -910,7 +741,7 @@ function switchSport(sport) {
   currentSport = sport; db.activeSport = sport; save();
   document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('active'));
   document.querySelector(`.sport-card.${sport}`).classList.add('active');
-  
+
   const titles = { pesi: 'Sessioni Pesi', nuoto: 'Sessioni Nuoto', corsa: 'Sessioni Corsa', bici: 'Sessioni Bici' };
   document.getElementById('sportHeaderTitle').textContent = titles[sport];
   renderWorkoutList();
@@ -935,18 +766,6 @@ function fillCycleSelect() {
     wi = Math.max(0, Math.min(wi, weeks.length - 1));
     weekSelect.value = wi + 1;
   }
-  const deleteBtn = document.getElementById('deleteCycleBtn');
-  if (deleteBtn) {
-    deleteBtn.disabled = db.cycles.length <= 1;
-    deleteBtn.style.opacity = deleteBtn.disabled ? '0.4' : '1';
-    deleteBtn.style.cursor = deleteBtn.disabled ? 'not-allowed' : 'pointer';
-  }
-  const deleteWeekBtn = document.getElementById('deleteWeekBtn');
-  if (deleteWeekBtn) {
-    deleteWeekBtn.disabled = weeks.length <= 1;
-    deleteWeekBtn.style.opacity = deleteWeekBtn.disabled ? '0.4' : '1';
-    deleteWeekBtn.style.cursor = deleteWeekBtn.disabled ? 'not-allowed' : 'pointer';
-  }
 }
 
 function selectCycle(v) { ci = +v; wi = 0; db.activeCycle = ci; db.activeWeek = wi; refresh(); }
@@ -959,6 +778,7 @@ function cleanWeekCopy(sourceWeek, newName) {
   Object.keys(copy.sports || {}).forEach(sp => {
     (copy.sports[sp] || []).forEach(session => {
       session.logged = false;
+      session.completed = false;
       session.notes = '';
       if (Array.isArray(session.items)) session.items.forEach(exercise => {
         (exercise.sets || []).forEach(set => {
@@ -990,18 +810,44 @@ function addWeek() {
   refresh();
 }
 
+function openDeleteMenu() {
+  const cycle = db.cycles[ci];
+  const sessions = cycle?.weeks?.[wi]?.sports?.[currentSport] || [];
+  const sessionOptions = sessions.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
+  showModal(`
+    <h4 style="margin-bottom:12px;">Cosa vuoi eliminare?</h4>
+    <button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="deleteWeek()">🗓️ Settimana selezionata</button>
+    <div style="margin:4px 0 12px;">
+      <label style="font-size:.75rem;color:var(--text-muted);display:block;margin-bottom:5px;">Sessione della settimana selezionata</label>
+      <select id="deleteSessionSelect" ${sessions.length ? '' : 'disabled'}>
+        ${sessionOptions || '<option value="">Nessuna sessione disponibile</option>'}
+      </select>
+      <button class="btn-secondary" style="width:100%;margin-top:7px;color:#dc2626;border-color:#fecaca;" ${sessions.length ? '' : 'disabled'} onclick="deleteSelectedSession()">🗑️ Elimina sessione</button>
+    </div>
+    <button class="btn-secondary" style="width:100%;color:#dc2626;border-color:#fecaca;" onclick="deleteCurrentCycle()">🗂️ Ciclo selezionato</button>
+  `);
+}
+
 function deleteWeek() {
   const cycle = db.cycles[ci];
   if (!cycle || cycle.weeks.length <= 1) {
     alert('Devi mantenere almeno una settimana nel ciclo.');
     return;
   }
-  if (!confirm(`Eliminare ${cycle.weeks[wi].name} e tutte le relative registrazioni?`)) return;
+  const weekName = cycle.weeks[wi]?.name || `Settimana ${wi + 1}`;
+  if (!confirm(`Eliminare ${weekName} e tutte le relative registrazioni?`)) return;
   cycle.weeks.splice(wi, 1);
   renumberWeeks(cycle);
   wi = Math.min(wi, cycle.weeks.length - 1);
   db.activeWeek = wi;
+  closeModal();
   refresh();
+}
+
+function deleteSelectedSession() {
+  const selected = document.getElementById('deleteSessionSelect');
+  if (!selected || selected.value === '') return;
+  deleteSession(Number(selected.value));
 }
 
 function renderWorkoutList() {
@@ -1018,11 +864,13 @@ function renderWorkoutList() {
     let detailText = currentSport === 'pesi' ? `${(session.items || []).length} esercizi previsti` : `Target: ${session.minutes || 30} min`;
     let badgeSport = currentSport.toUpperCase();
     let sportColor = currentSport === 'pesi' ? 'var(--fut-gold)' : currentSport === 'nuoto' ? 'var(--fut-cyan)' : currentSport === 'corsa' ? 'var(--fut-green)' : 'var(--fut-purple)';
-    
+
     card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 4px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
         <span style="font-size:0.68rem; font-weight:800; color:${sportColor}; letter-spacing:0.8px; text-transform:uppercase;">${badgeSport}</span>
-        <div style="font-size: 1.2rem;">${session.logged ? '✅' : '➔'}</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size: 1.2rem;">${session.completed ? '✅' : '➔'}</span>
+        </div>
       </div>
       <h4 style="font-size: 1.05rem; font-weight:800; margin-bottom: 4px; color:#0f172a; line-height:1.2;">${session.name}</h4>
       <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">${detailText}</div>
@@ -1064,15 +912,14 @@ function openGymSession(idx) {
     <div style="display:flex; gap:8px; margin-top:14px; margin-bottom:12px;">
       <button class="btn-secondary" style="flex:1;" onclick="addNewExercisePrompt(${idx})">＋ Esercizio</button>
     </div>
-    
+
     <div class="card" style="min-height:auto; margin-bottom:12px; padding:12px;">
       <label style="font-size:0.72rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Note della Sessione / Sensazioni</label>
       <textarea id="sessionNotes" placeholder="Es. Ottime sensazioni..." rows="2" oninput="saveSessionNotes('pesi', ${idx}, this.value)">${s.notes || ''}</textarea>
     </div>
 
     <div style="display:flex; gap:8px;">
-      <button class="btn-secondary" style="flex:1; color:#dc2626; border-color:#fecaca;" onclick="deleteSession(${idx})">🗑️ Elimina sessione</button>
-      <button class="btn-gold" style="flex:2;" onclick="finishSession('pesi',${idx})">✓ Salva Sessione Pesi</button>
+      <button class="btn-gold" style="flex:1; ${s.completed ? 'background:#16a34a;border-color:#16a34a;' : ''}" onclick="toggleSessionFinished('pesi',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
     </div>
   `;
   showModal(body);
@@ -1095,364 +942,251 @@ function addNewSessionPrompt() {
 }
 
 function confirmAddSession() {
-  let name = document.getElementById('newSessionName').value.trim();
-  if(!name) { alert('Inserisci un nome per la sessione!'); return; }
-
+  let name = document.getElementById('newSessionName').value.trim();  if(!name) return alert("Inserisci un nome.");
   const week = db.cycles[ci].weeks[wi];
-  if (!week.sports) week.sports = {};
-  if (!Array.isArray(week.sports[currentSport])) week.sports[currentSport] = [];
+  if(!week.sports[currentSport]) week.sports[currentSport] = [];
 
-  const newSes = currentSport === 'pesi'
-    ? { name, items: [], notes: '', logged: false }
-    : { name, distance: 0, minutes: 30, notes: '', logged: false };
+  let newS = currentSport === 'pesi'
+    ? { name, items: [], notes: '', logged: false, completed: false }
+    : { name, distance: 0, minutes: 30, notes: '', logged: false, completed: false };
 
-  week.sports[currentSport].push(newSes);
-  save(); closeModal(); renderWorkoutList();
+  week.sports[currentSport].push(newS);
+  closeModal(); refresh();
 }
 
-function deleteSession(sIdx) {
-  const sessions = db.cycles[ci].weeks[wi].sports[currentSport] || [];
-  const session = sessions[sIdx];
-  if (!session) return;
-  if (!confirm(`Eliminare definitivamente la sessione "${session.name}" dalla Settimana ${wi + 1}?`)) return;
-
-  sessions.splice(sIdx, 1);
+function toggleSessionFinished(sport, sIdx) {
+  const session = db.cycles[ci].weeks[wi].sports[sport][sIdx];
+  session.completed = !session.completed;
   save();
-  closeModal();
+  if (sport === 'pesi') openGymSession(sIdx);
+  else openCardioSession(sIdx);
   renderWorkoutList();
 }
 
-function addNewExercisePrompt(sIdx) {
-  let options = Object.keys(EX_GUIDES).sort((a, b) => a.localeCompare(b, 'it')).map(name => `<option value="${name}">${name}</option>`).join('');
-  
-  showModal(`
-    <h4 style="margin-bottom:10px; color:#0f172a; font-size:1rem;">Aggiungi Esercizio</h4>
-    <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Elenco Predefinito (${Object.keys(EX_GUIDES).length} esercizi)</label>
-    <select id="newExSelect" onchange="onSelectExistingExercise(this.value)" style="margin-bottom:10px;">
-      <option value="">-- Seleziona Esercizio --</option>
-      ${options}
-    </select>
-    
-    <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Nome Esercizio</label>
-    <input type="text" id="newExCustom" placeholder="es. Hip Thrust" style="margin-bottom:10px;">
-
-    <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Descrizione / Esecuzione</label>
-    <textarea id="newExDesc" placeholder="Dettagli..." rows="2" style="margin-bottom:10px;"></textarea>
-    
-    <div style="display:flex; gap:8px; margin-bottom:12px;">
-      <div style="flex:1;">
-        <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Kg</label>
-        <div class="stepper-control">
-          <button class="stepper-btn" onclick="adjustInput('newExKg', -1)">−</button>
-          <input type="number" id="newExKg" value="20" step="0.5">
-          <button class="stepper-btn" onclick="adjustInput('newExKg', 1)">＋</button>
-        </div>
-      </div>
-      <div style="flex:1;">
-        <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Serie</label>
-        <div class="stepper-control">
-          <button class="stepper-btn" onclick="adjustInput('newExSets', -1)">−</button>
-          <input type="number" id="newExSets" value="3">
-          <button class="stepper-btn" onclick="adjustInput('newExSets', 1)">＋</button>
-        </div>
-      </div>
-      <div style="flex:1;">
-        <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Reps</label>
-        <div class="stepper-control">
-          <button class="stepper-btn" onclick="adjustInput('newExReps', -1)">−</button>
-          <input type="number" id="newExReps" value="8">
-          <button class="stepper-btn" onclick="adjustInput('newExReps', 1)">＋</button>
-        </div>
-      </div>
-    </div>
-    
-    <button class="btn-gold" onclick="confirmAddExercise(${sIdx})">Conferma e Aggiungi</button>
-  `);
-}
-
-function adjustInput(id, delta) {
-  let el = document.getElementById(id);
-  if(!el) return;
-  let val = parseFloat(el.value) || 0;
-  val = Math.max(0, val + delta);
-  el.value = Number.isInteger(val) ? val : val.toFixed(1);
-}
-
-function onSelectExistingExercise(name) {
-  if(!name) return;
-  document.getElementById('newExCustom').value = name;
-  let g = EX_GUIDES[name];
-  if(g && g.desc) document.getElementById('newExDesc').value = g.desc;
-}
-
-function confirmAddExercise(sIdx) {
-  let exName = document.getElementById('newExCustom').value.trim();
-  let exDesc = document.getElementById('newExDesc').value.trim();
-  if(!exName) { alert("Inserisci il nome!"); return; }
-
-  let kg = parseFloat(document.getElementById('newExKg').value) || 0;
-  let numSets = parseInt(document.getElementById('newExSets').value) || 3;
-  let reps = parseInt(document.getElementById('newExReps').value) || 8;
-
-  let repsStr = Array(numSets).fill(reps).join(',');
-  let newObj = ex(exName, kg, repsStr, exDesc);
-
-  const currentWeek = db.cycles[ci].weeks[wi];
-  if (!currentWeek.sports) currentWeek.sports = {};
-  if (!Array.isArray(currentWeek.sports.pesi)) currentWeek.sports.pesi = [];
-  if (!currentWeek.sports.pesi[sIdx]) {
-    alert('Sessione non trovata nella settimana selezionata.');
+function deleteSession(idx) {
+  const sessions = db.cycles[ci].weeks[wi].sports[currentSport];
+  if (!sessions || sessions.length <= 1) {
+    alert('Devi mantenere almeno una sessione per questo sport.');
     return;
   }
-  currentWeek.sports.pesi[sIdx].items.push(newObj);
-  save(); openGymSession(sIdx);
-}
-
-function deleteExercise(sIdx, ei) {
-  if(!confirm('Eliminare questo esercizio?')) return;
-  const session = db.cycles[ci].weeks[wi]?.sports?.pesi?.[sIdx];
-  if (!session || !session.items[ei]) return;
-  session.items.splice(ei, 1);
-  save(); openGymSession(sIdx);
-}
-
-function editExerciseTargets(sIdx, ei) {
-  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei];
-  const rows = (exercise.sets || []).map((set, index) => `
-    <div style="display:grid; grid-template-columns:42px 1fr 1fr; gap:8px; align-items:center; margin-bottom:8px;">
-      <b style="color:#d97706;">S${index + 1}</b>
-      <label style="font-size:.72rem; color:var(--text-muted);">Kg<input type="number" min="0" step="0.5" id="targetKg_${index}" value="${set.plannedKg ?? exercise.kg ?? 0}"></label>
-      <label style="font-size:.72rem; color:var(--text-muted);">Ripetizioni<input type="number" min="0" step="1" id="targetReps_${index}" value="${set.plannedReps ?? exercise.reps ?? 8}"></label>
-    </div>`).join('');
-  showModal(`
-    <h4 style="margin-bottom:10px;">Target · ${exercise.name}</h4>
-    <p style="font-size:.76rem; color:var(--text-muted); margin-bottom:12px;">Modifiche limitate a ${db.cycles[ci].weeks[wi].name}. Le altre settimane non cambiano.</p>
-    ${rows}
-    <div style="display:flex; gap:8px; margin-top:14px;">
-      <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Annulla</button>
-      <button class="btn-gold" style="flex:2;" onclick="saveExerciseTargets(${sIdx},${ei})">Salva target</button>
-    </div>`);
-}
-
-function saveExerciseTargets(sIdx, ei) {
-  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei];
-  for (let index = 0; index < exercise.sets.length; index++) {
-    const kg = Number(document.getElementById(`targetKg_${index}`).value);
-    const reps = Number(document.getElementById(`targetReps_${index}`).value);
-    if (!Number.isFinite(kg) || kg < 0 || !Number.isFinite(reps) || reps < 0) {
-      alert('Inserisci valori validi per carico e ripetizioni.');
-      return;
-    }
-    exercise.sets[index].plannedKg = kg;
-    exercise.sets[index].plannedReps = reps;
-  }
-  exercise.kg = exercise.sets[0]?.plannedKg ?? exercise.kg;
-  exercise.reps = exercise.sets.map(set => set.plannedReps).join(',');
-  save();
+  const name = sessions[idx]?.name || 'Sessione';
+  if (!confirm(`Eliminare definitivamente "${name}"?`)) return;
+  sessions.splice(idx, 1);
   closeModal();
+  refresh();
+}
+
+function deleteExercise(sIdx, eIdx) {
+  const s = db.cycles[ci].weeks[wi].sports.pesi[sIdx];
+  if (!confirm(`Rimuovere ${s.items[eIdx].name}?`)) return;
+  s.items.splice(eIdx, 1);
+  save();
   openGymSession(sIdx);
 }
 
-function logExercise(sIdx, ei) {
-  let e = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei];
-  let g = EX_GUIDES[e.name] || {};
-  document.getElementById('modalTitle').textContent = `Registra · ${e.name}`;
-  
-  let descToShow = e.description || g.desc || 'Nessuna descrizione.';
-  let guideHtml = `
-    <div class="tech-guide-inline">
-      ${g.muscles ? `<div style="font-size:0.7rem; color:#d97706; font-weight:800; text-transform:uppercase; margin-bottom:3px;">${g.muscles}</div>` : ''}
-      <h5 style="margin-top:0;">Esecuzione</h5><p>${descToShow}</p>
-      ${g.pos ? `<h5>Posizione</h5><p>${g.pos}</p>` : ''}
-      ${g.detail ? `<h5>Focus Tecnico</h5><p>${g.detail}</p>` : ''}
-      ${g.video ? `<a href="${g.video}" target="_blank" rel="noopener noreferrer" class="video-link-btn">▶️ Video Tutorial</a>` : ''}
-    </div>
-  `;
-
-  let rows = e.sets.map((s, i) => `
-    <div class="set-row">
-      <span style="font-weight:700; color:#d97706; font-size:0.8rem;">#${i+1}</span>
-      <div class="stepper-control">
-        <button class="stepper-btn" onclick="adjustSetVal(${sIdx},${ei},${i},'kg',-0.5)">−</button>
-        <input type="number" step="0.5" placeholder="Kg" value="${s.actualKg !== undefined ? s.actualKg : ''}" oninput="syncSet(${sIdx},${ei},${i},'kg',this.value)" id="kgInput_${i}">
-        <button class="stepper-btn" onclick="adjustSetVal(${sIdx},${ei},${i},'kg',0.5)">＋</button>
-      </div>
-      <div class="stepper-control">
-        <button class="stepper-btn" onclick="adjustSetVal(${sIdx},${ei},${i},'reps',-1)">−</button>
-        <input type="number" placeholder="Reps" value="${s.actualReps !== undefined ? s.actualReps : ''}" oninput="syncSet(${sIdx},${ei},${i},'reps',this.value)" id="repsInput_${i}">
-        <button class="stepper-btn" onclick="adjustSetVal(${sIdx},${ei},${i},'reps',1)">＋</button>
-      </div>
-      <button class="recovery-btn ${s.recoveryStartedAt ? 'running' : ''}" onclick="toggleRecoveryTimer(${sIdx},${ei},${i})" id="recoveryBtn_${i}">
-        ${s.recoveryStartedAt ? '■' : '▶'} <span data-recovery-time="${ci}-${wi}-${sIdx}-${ei}-${i}">${formatRecoveryTime(getRecoverySeconds(s))}</span>
-      </button>
-      <button class="check-btn ${s.done ? 'done' : ''}" onclick="toggleDone(${sIdx},${ei},${i})" id="done${i}">✓</button>
-    </div>
-  `).join('');
-
+function addNewExercisePrompt(sIdx) {
   showModal(`
-    ${guideHtml}
-    <div style="font-size:0.68rem; color:var(--text-muted); margin:-4px 0 8px;">Recupero</div>
-    <div style="background:#f8fafc; padding: 10px; border-radius: 12px; margin-bottom: 10px; font-size: 0.8rem; border:1px solid var(--border-subtle);">
-      <strong style="color:#d97706;">Target:</strong> ${e.sets.map(s => `${s.plannedKg}kg × ${s.plannedReps}`).join(' | ')}
+    <h4 style="margin-bottom:10px;">Aggiungi Esercizio</h4>
+    <input type="text" id="exSearch" placeholder="Cerca o scrivi esercizio..." oninput="filterExerciseOptions()" style="margin-bottom:8px;">
+    <select id="exSelect" size="5" style="margin-bottom:10px;">${Object.keys(EX_GUIDES).map(n => `<option value="${n}">${n}</option>`).join('')}</select>
+    <label style="font-size:.72rem;color:var(--text-muted);display:block;margin-bottom:4px;">Nome personalizzato (opzionale)</label>
+    <input type="text" id="customExName" placeholder="Nome esercizio" style="margin-bottom:10px;">
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input type="number" id="exKg" placeholder="Kg" value="10">
+      <input type="number" id="exReps" placeholder="Ripetizioni" value="8">
     </div>
-    <div>${rows}</div>
-    <div style="display:flex; gap: 8px; margin-top: 14px;">
-      <button class="btn-secondary" style="flex:1;" onclick="addSet(${sIdx},${ei})">+ Serie</button>
-      <button class="btn-gold" style="flex:2;" onclick="saveExercise(${sIdx},${ei})">Salva</button>
-    </div>
+    <button class="btn-gold" onclick="confirmAddExercise(${sIdx})">Aggiungi</button>
   `);
-  ensureRecoveryTicker();
 }
 
-let recoveryTicker = null;
+function filterExerciseOptions() {
+  const q = document.getElementById('exSearch').value.toLowerCase();
+  const select = document.getElementById('exSelect');
+  select.innerHTML = Object.keys(EX_GUIDES).filter(n => n.toLowerCase().includes(q))
+    .map(n => `<option value="${n}">${n}</option>`).join('');
+}
 
-function formatRecoveryTime(totalSeconds) {
-  const seconds = Math.max(0, Math.floor(Number(totalSeconds) || 0));
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return `${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`;
+function confirmAddExercise(sIdx) {
+  const selected = document.getElementById('exSelect').value;
+  const custom = document.getElementById('customExName').value.trim();
+  const name = custom || selected;
+  const kg = Number(document.getElementById('exKg').value);
+  const reps = Number(document.getElementById('exReps').value);
+  if (!name) return alert('Seleziona o scrivi un esercizio.');
+  if (!Number.isFinite(kg) || kg < 0 || !Number.isFinite(reps) || reps < 1) return alert('Inserisci kg e ripetizioni validi.');
+  const s = db.cycles[ci].weeks[wi].sports.pesi[sIdx];
+  s.items.push(ex(name, kg, reps));
+  save();
+  openGymSession(sIdx);
+}
+
+function editExerciseTargets(sIdx, eIdx) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
+  const sets = exercise.sets || [];
+  showModal(`
+    <h4 style="margin-bottom:10px;">Target: ${exercise.name}</h4>
+    <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px;">Modifica carico e ripetizioni previste per ogni serie.</p>
+    <div id="targetRows">
+      ${sets.map((set, i) => `
+        <div style="display:grid;grid-template-columns:35px 1fr 1fr;gap:7px;align-items:center;margin-bottom:7px;">
+          <b style="font-size:.8rem;">S${i+1}</b>
+          <input type="number" id="targetKg${i}" value="${set.plannedKg ?? ''}" placeholder="Kg">
+          <input type="number" id="targetReps${i}" value="${set.plannedReps ?? ''}" placeholder="Reps">
+        </div>
+      `).join('')}
+    </div>
+    <button class="btn-secondary" style="width:100%;margin:8px 0;" onclick="addTargetSet(${sIdx},${eIdx})">＋ Aggiungi serie</button>
+    <button class="btn-gold" onclick="saveExerciseTargets(${sIdx},${eIdx})">Salva target</button>
+  `);
+}
+
+function addTargetSet(sIdx, eIdx) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
+  exercise.sets.push({ plannedKg: exercise.kg || 0, plannedReps: exercise.reps || 8, actualKg: '', actualReps: '', done: false, recoverySeconds: 0 });
+  save();
+  editExerciseTargets(sIdx, eIdx);
+}
+
+function saveExerciseTargets(sIdx, eIdx) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
+  const sets = exercise.sets || [];
+  for (let i = 0; i < sets.length; i++) {
+    const kg = Number(document.getElementById(`targetKg${i}`).value);
+    const reps = Number(document.getElementById(`targetReps${i}`).value);
+    if (!Number.isFinite(kg) || kg < 0 || !Number.isFinite(reps) || reps < 1) {
+      alert(`Valori non validi nella serie ${i + 1}.`);
+      return;
+    }
+    sets[i].plannedKg = kg;
+    sets[i].plannedReps = reps;
+  }
+  exercise.kg = sets[0]?.plannedKg ?? exercise.kg;
+  exercise.reps = sets[0]?.plannedReps ?? exercise.reps;
+  save();
+  openGymSession(sIdx);
+}
+
+function logExercise(sIdx, eIdx) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
+  const sets = exercise.sets || [];
+  showModal(`
+    <h4 style="margin-bottom:10px;">Registra: ${exercise.name}</h4>
+    <div style="font-size:.7rem;color:var(--text-muted);display:grid;grid-template-columns:28px 1fr 1fr 75px 38px;gap:5px;margin-bottom:6px;">
+      <span>#</span><span>Kg</span><span>Reps</span><span>Recupero</span><span>✓</span>
+    </div>
+    ${sets.map((set, i) => `
+      <div class="set-row">
+        <b style="font-size:.8rem;">${i+1}</b>
+        <input type="number" id="actualKg${i}" value="${set.actualKg ?? ''}" placeholder="${set.plannedKg ?? 'Kg'}">
+        <input type="number" id="actualReps${i}" value="${set.actualReps ?? ''}" placeholder="${set.plannedReps ?? 'Reps'}">
+        <button class="recovery-btn" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${formatRecoveryTime(getRecoverySeconds(set))}</button>
+        <button class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">${set.done ? '✓' : '○'}</button>
+      </div>
+    `).join('')}
+    <button class="btn-gold" style="margin-top:12px;" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
+  `);
+}
+
+function saveExerciseLog(sIdx, eIdx) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
+  exercise.sets.forEach((set, i) => {
+    const kg = document.getElementById(`actualKg${i}`).value;
+    const reps = document.getElementById(`actualReps${i}`).value;
+    set.actualKg = kg === '' ? '' : Number(kg);
+    set.actualReps = reps === '' ? '' : Number(reps);
+  });
+  save();
+  openGymSession(sIdx);
+}
+
+function toggleSetDone(sIdx, eIdx, setIdx) {
+  const set = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx].sets[setIdx];
+  set.done = !set.done;
+  save();
+  const btn = document.getElementById(`doneBtn${setIdx}`);
+  btn.classList.toggle('done', set.done);
+  btn.textContent = set.done ? '✓' : '○';
 }
 
 function getRecoverySeconds(set) {
-  const saved = Math.max(0, Number(set.recoverySeconds) || 0);
-  if (!set.recoveryStartedAt) return saved;
-  return saved + Math.max(0, Math.floor((Date.now() - Number(set.recoveryStartedAt)) / 1000));
+  if (set.recoveryStartedAt) {
+    return Math.max(0, Math.floor((Date.now() - set.recoveryStartedAt) / 1000));
+  }
+  return Number(set.recoverySeconds) || 0;
 }
 
-function toggleRecoveryTimer(sIdx, ei, setIdx) {
-  const set = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei].sets[setIdx];
+function formatRecoveryTime(seconds) {
+  const s = Math.max(0, Number(seconds) || 0);
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+function toggleRecovery(sIdx, eIdx, setIdx) {
+  const set = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx].sets[setIdx];
+  const btn = document.getElementById(`recoveryBtn${setIdx}`);
   if (set.recoveryStartedAt) {
     set.recoverySeconds = getRecoverySeconds(set);
     delete set.recoveryStartedAt;
+    btn.classList.remove('running');
+    btn.textContent = formatRecoveryTime(set.recoverySeconds);
   } else {
     set.recoveryStartedAt = Date.now();
+    btn.classList.add('running');
+    btn.textContent = 'Stop';
   }
   save();
-  logExercise(sIdx, ei);
 }
 
-function ensureRecoveryTicker() {
-  const hasRunningTimer = db.cycles.some(c => c.weeks.some(w =>
-    Object.values(w.sports || {}).some(sessions => sessions.some(session =>
-      (session.items || []).some(exercise => (exercise.sets || []).some(set => !!set.recoveryStartedAt))
-    ))
-  ));
-
-  if (hasRunningTimer && !recoveryTicker) {
-    recoveryTicker = setInterval(() => {
-      document.querySelectorAll('[data-recovery-time]').forEach(el => {
-        const parts = el.getAttribute('data-recovery-time').split('-').map(Number);
-        const [cycleIndex, weekIndex, sessionIndex, exerciseIndex, setIndex] = parts;
-        const set = db.cycles[cycleIndex]?.weeks[weekIndex]?.sports?.pesi?.[sessionIndex]?.items?.[exerciseIndex]?.sets?.[setIndex];
-        if (set) el.textContent = formatRecoveryTime(getRecoverySeconds(set));
-      });
-      const stillRunning = db.cycles.some(c => c.weeks.some(w =>
-        Object.values(w.sports || {}).some(sessions => sessions.some(session =>
-          (session.items || []).some(exercise => (exercise.sets || []).some(set => !!set.recoveryStartedAt))
-        ))
-      ));
-      if (!stillRunning) {
-        clearInterval(recoveryTicker);
-        recoveryTicker = null;
-      }
-    }, 250);
-  }
-}
-
-function adjustSetVal(sIdx, ei, setIdx, field, delta) {
-  let s = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei].sets[setIdx];
-  let curr = parseFloat(field === 'kg' ? s.actualKg : s.actualReps) || 0;
-  let updated = Math.max(0, curr + delta);
-  let valStr = Number.isInteger(updated) ? updated.toString() : updated.toFixed(1);
-  if(field === 'kg') s.actualKg = valStr;
-  if(field === 'reps') s.actualReps = valStr;
-  save();
-  let inputEl = document.getElementById((field === 'kg' ? 'kgInput_' : 'repsInput_') + setIdx);
-  if(inputEl) inputEl.value = valStr;
-}
-
-function syncSet(sIdx, ei, setIdx, field, val) {
-  let s = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei].sets[setIdx];
-  if(field === 'kg') s.actualKg = val;
-  if(field === 'reps') s.actualReps = val;
-  save();
-}
-
-function toggleDone(sIdx, ei, setIdx) {
-  let s = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei].sets[setIdx];
-  s.done = !s.done; save();
-  document.getElementById('done'+setIdx).classList.toggle('done', s.done);
-}
-
-function addSet(sIdx, ei) {
-  let e = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[ei];
-  let last = e.sets[e.sets.length-1] || { plannedKg: e.kg, plannedReps: 6 };
-  e.sets.push({ plannedKg: last.plannedKg, plannedReps: last.plannedReps, actualKg: '', actualReps: '', done: false, recoverySeconds: 0 });
-  save(); logExercise(sIdx, ei);
-}
-
-function saveExercise(sIdx, ei) {
-  db.cycles[ci].weeks[wi].sports.pesi[sIdx].logged = true;
-  save(); closeModal(); openGymSession(sIdx);
-}
-
-function openCardioSession(sIdx) {
-  let s = db.cycles[ci].weeks[wi].sports[currentSport][sIdx];
+function openCardioSession(idx) {
+  const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
   document.getElementById('modalTitle').textContent = s.name;
   showModal(`
-    <div class="card" style="min-height:auto; margin-bottom:14px; padding:12px;">
-      <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Distanza (metri / km)</label>
-      <div class="stepper-control" style="margin-bottom:10px;">
-        <button class="stepper-btn" onclick="adjustInput('cDist', -100)">−</button>
-        <input type="number" id="cDist" value="${s.distance||''}" placeholder="es. 1500">
-        <button class="stepper-btn" onclick="adjustInput('cDist', 100)">＋</button>
-      </div>
-      <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Durata (minuti)</label>
-      <div class="stepper-control" style="margin-bottom:10px;">
-        <button class="stepper-btn" onclick="adjustInput('cMins', -5)">−</button>
-        <input type="number" id="cMins" value="${s.minutes||''}" placeholder="es. 30">
-        <button class="stepper-btn" onclick="adjustInput('cMins', 5)">＋</button>
-      </div>
-      <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Note</label>
-      <textarea id="cardioNotes" placeholder="Sensazioni..." rows="2" oninput="saveSessionNotes('${currentSport}', ${sIdx}, this.value)">${s.notes || ''}</textarea>
+    <h4 style="margin-bottom:10px;">${s.name}</h4>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div><label style="font-size:.72rem;color:var(--text-muted);">Distanza (m)</label><input type="number" id="cardioDistance" value="${s.distance || 0}"></div>
+      <div><label style="font-size:.72rem;color:var(--text-muted);">Durata (min)</label><input type="number" id="cardioMinutes" value="${s.minutes || 0}"></div>
     </div>
-    <div style="display:flex; gap:8px;">
-      <button class="btn-secondary" style="flex:1; color:#dc2626; border-color:#fecaca;" onclick="deleteSession(${sIdx})">🗑️ Elimina sessione</button>
-      <button class="btn-gold" style="flex:2;" onclick="finishSession('${currentSport}',${sIdx})">Salva Sessione</button>
-    </div>
+    <label style="font-size:.72rem;color:var(--text-muted);display:block;margin-bottom:4px;">Note</label>
+    <textarea id="cardioNotes" rows="2" oninput="saveCardioNotes(${idx},this.value)">${s.notes || ''}</textarea>
+    <button class="btn-gold" style="margin-top:12px;" onclick="saveCardioSession(${idx})">Salva sessione</button>
+    <button class="btn-gold" style="margin-top:8px;${s.completed ? 'background:#16a34a;' : ''}" onclick="toggleSessionFinished('${currentSport}',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
   `);
 }
 
-function finishSession(sport, sIdx) {
-  let s = db.cycles[ci].weeks[wi].sports[sport][sIdx];
-  if(sport !== 'pesi') {
-    s.distance = document.getElementById('cDist').value;
-    s.minutes = document.getElementById('cMins').value;
-  }
-  s.logged = true; refresh(); closeModal();
+function saveCardioNotes(idx, val) {
+  db.cycles[ci].weeks[wi].sports[currentSport][idx].notes = val;
+  save();
+}
+
+function saveCardioSession(idx) {
+  const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
+  s.distance = Number(document.getElementById('cardioDistance').value) || 0;
+  s.minutes = Number(document.getElementById('cardioMinutes').value) || 0;
+  s.notes = document.getElementById('cardioNotes').value;
+  s.logged = true;
+  save(); closeModal(); refresh();
 }
 
 function setupProgress() {
-  let names = new Set(Object.keys(EX_GUIDES));
-  db.cycles.forEach(c => c.weeks.forEach(w => {
-    let pesiList = (w.sports && w.sports.pesi) || [];
-    pesiList.forEach(s => (s.items || []).forEach(e => {
-      if(e.name) names.add(e.name);
-    }));
-  }));
-
-  let sortedNames = [...names].sort((a, b) => a.localeCompare(b, 'it'));
-  let s = document.getElementById('progressExercise');
-  let old = s.value;
-  s.innerHTML = sortedNames.map(n => `<option>${n}</option>`).join('');
-  if(sortedNames.includes(old)) s.value = old;
+  const all = new Set();
+  db.cycles.forEach(c => c.weeks.forEach(w => (w.sports.pesi || []).forEach(s => (s.items || []).forEach(e => all.add(e.name)))));
+  const sel = document.getElementById('progressExercise');
+  const current = sel.value;
+  sel.innerHTML = [...all].map(n => `<option value="${n}">${n}</option>`).join('');
+  if (all.has(current)) sel.value = current;
   renderProgress();
 }
 
 function renderProgress() {
-  let n = document.getElementById('progressExercise').value;
+  const sel = document.getElementById('progressExercise');
+  if (!sel || !sel.value) {
+    document.getElementById('progressContent').innerHTML = '<p style="color:var(--text-muted);margin-top:12px;">Nessun esercizio disponibile.</p>';
+    return;
+  }
+  let n = sel.value;
   let h = collectHistory(n);
-  
+
   let detailsHtml = h.length ? `
     <div style="margin-top:10px; font-size:0.78rem; color:var(--text-muted);">
       <b>Storico registrazioni:</b>
@@ -1471,9 +1205,7 @@ function renderProgress() {
     ${detailsHtml}
   `;
   drawLine('progressChart', h.map(x=>x.labelShort), h.map(x=>x.kg));
-}
-
-function collectHistory(name) {
+      }function collectHistory(name) {
   let out = [];
   db.cycles.forEach((c, cx) => c.weeks.forEach((w, wx) => {
     let pesiList = (w.sports && w.sports.pesi) || [];
@@ -1508,13 +1240,13 @@ function drawLine(id, labels, values) {
   let c = document.getElementById(id); if(!c) return;
   let ctx = c.getContext('2d'), w = c.width = c.offsetWidth || 300, h = c.height = 210;
   ctx.clearRect(0,0,w,h);
-  
+
   let valid = values.filter(v => Number.isFinite(v));
   if(!valid.length) {
     ctx.fillStyle = '#64748b'; ctx.font = '12px Inter, sans-serif';
     ctx.fillText('Nessun dato registrato', 16, 40); return;
   }
-  
+
   let min = Math.min(...valid)-2, max = Math.max(...valid)+2;
   let left = 35, right = w - 20, top = 30, bottom = h - 35;
 
@@ -1530,7 +1262,7 @@ function drawLine(id, labels, values) {
   pts.forEach(p => {
     ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2); ctx.fill();
     ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2; ctx.stroke();
-    
+
     ctx.fillStyle = '#0f172a'; ctx.font = 'bold 10px Inter, sans-serif';
     ctx.fillText(p.v + 'kg', p.x - 10, p.y - 8);
 
@@ -1589,10 +1321,12 @@ function deleteCurrentCycle() {
   db.activeCycle = ci;
   db.activeWeek = wi;
   save();
+  closeModal();
   refresh();
 }
 
 function downloadFile(blob, filename) {
+  // Android: passa il file al componente nativo.
   if (window.AndroidBridge && typeof window.AndroidBridge.saveFile === 'function') {
     const reader = new FileReader();
 
@@ -1605,6 +1339,7 @@ function downloadFile(blob, filename) {
     return;
   }
 
+  // Browser: download standard.
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
