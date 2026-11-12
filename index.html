@@ -85,8 +85,12 @@ header {
 .sport-card.corsa.active { background: var(--fut-green-subtle); border-color: var(--fut-green); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2); }
 .sport-card.bici.active { background: var(--fut-purple-subtle); border-color: var(--fut-purple); box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2); }
 
-.section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 12px; gap: 8px; }
+/* Layout pulito su due righe per la sezione principale */
+.section-header-top { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 6px; }
 .section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; }
+.section-actions-row { display: flex; gap: 6px; width: 100%; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; white-space: nowrap; }
+.section-actions-row::-webkit-scrollbar { display: none; }
+.section-actions-row .btn-secondary { flex: 1; text-align: center; padding: 8px 10px; }
 
 .card {
   background: var(--bg-card); 
@@ -154,24 +158,16 @@ select, input, textarea {
 }
 select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-.stepper-control {
-  display: flex; align-items: center; border: 1px solid var(--border-subtle); border-radius: 12px; background: #f8fafc; overflow: hidden;
-}
-.stepper-btn {
-  background: #e2e8f0; border: none; color: #334155; font-weight: 800; font-size: 1rem; width: 34px; height: 38px;
-  display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.stepper-control input { border: none; background: transparent; text-align: center; padding: 6px 2px; }
-
-.set-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr) auto 38px; gap: 5px; align-items: center; margin-bottom: 8px; }
+/* Nuova proporzione ottimizzata per la griglia di registrazione serie */
+.set-row { display: grid; grid-template-columns: 24px 1fr 1fr 85px 44px; gap: 6px; align-items: center; margin-bottom: 8px; }
 .set-row input { text-align: center; font-weight: 700; border-radius: 10px; padding: 8px 4px; }
-.recovery-btn { border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; border-radius: 10px; min-height: 38px; padding: 0 7px; font-size: 0.68rem; font-weight: 800; white-space: nowrap; cursor: pointer; }
+.recovery-btn { border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; border-radius: 10px; height: 42px; padding: 0 4px; font-size: 0.72rem; font-weight: 800; white-space: nowrap; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .recovery-btn.running { background: #fee2e2; border-color: #fecaca; color: #b91c1c; }
-@media (max-width: 390px) { .set-row { grid-template-columns: 20px minmax(0,1fr) minmax(0,1fr) auto 36px; gap: 3px; } .recovery-btn { padding: 0 5px; font-size: 0.62rem; } }
+
 .check-btn {
   background: #f1f5f9; color: #64748b; border: 1px solid var(--border-subtle);
-  height: 38px; width: 38px; border-radius: 10px; font-weight: 800; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
+  height: 42px; width: 44px; border-radius: 10px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
 }
 .check-btn.done { background: #2563eb; color: #ffffff; border: none; }
 
@@ -207,46 +203,13 @@ select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0
 .chart-label-y { position: absolute; top: 4px; left: 8px; font-size: 0.7rem; font-weight: 700; color: #64748b; }
 canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--border-subtle); }
 
-.tech-guide-inline {
-  background: #f8fafc; border-radius: 14px; padding: 14px; margin-bottom: 14px; font-size: 0.82rem; line-height: 1.4; border: 1px solid var(--border-subtle);
-}
-.tech-guide-inline h5 { color: #d97706; margin: 8px 0 2px 0; font-size: 0.78rem; text-transform: uppercase; }
-.tech-guide-inline p { color: #64748b; }
-
 @media (max-width: 520px) {
-  header {
-    padding: 10px 12px;
-  }
-
-  .header-top {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .profile-info {
-    width: 100%;
-    flex: 0 0 auto;
-  }
-
-  .profile-name {
-    font-size: 1.05rem;
-    white-space: nowrap;
-  }
-
-  .header-actions {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  .header-actions .btn-secondary {
-    min-width: 0;
-    padding: 8px 4px;
-    font-size: 0.68rem;
-    text-align: center;
-  }
+  header { padding: 10px 12px; }
+  .header-top { flex-direction: column; align-items: stretch; gap: 10px; }
+  .profile-info { width: 100%; flex: 0 0 auto; }
+  .profile-name { font-size: 1.05rem; white-space: nowrap; }
+  .header-actions { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .header-actions .btn-secondary { min-width: 0; padding: 8px 4px; font-size: 0.68rem; text-align: center; }
 }
 </style>
 </head>
@@ -304,21 +267,22 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
       </div>
     </div>
 
-    <div class="section-header">
+    <!-- Struttura ordinata su due righe distinte -->
+    <div class="section-header-top">
       <div class="section-title" id="sportHeaderTitle">Sessioni Pesi</div>
-      <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
-        <button class="btn-secondary" onclick="addWeek()" title="Duplica struttura settimana">＋ Settimana</button>
-        <button class="btn-secondary" onclick="addNewSessionPrompt()">＋ Sessione</button>
-        <button class="btn-secondary" onclick="createCycle()">＋ Ciclo</button>
-        <button class="btn-secondary" onclick="openDeleteMenu()" title="Elimina settimana, sessione o ciclo" aria-label="Elimina" style="padding:10px 12px; color:#dc2626; border-color:#fecaca; background:#fff1f2;">🗑️</button>
-      </div>
+    </div>
+    <div class="section-actions-row">
+      <button class="btn-secondary" onclick="addWeek()">＋ Settimana</button>
+      <button class="btn-secondary" onclick="addNewSessionPrompt()">＋ Sessione</button>
+      <button class="btn-secondary" onclick="createCycle()">＋ Ciclo</button>
+      <button class="btn-secondary" onclick="openDeleteMenu()" style="color:#dc2626; border-color:#fecaca; background:#fff1f2;">🗑️ Elimina</button>
     </div>
 
     <div id="workoutList"></div>
   </div>
 
   <div id="view-progress" class="view">
-    <div class="section-header">
+    <div class="section-header-top">
       <div class="section-title">Grafico Progresso Carichi</div>
     </div>
     <div class="card" style="padding: 16px;">
@@ -1075,7 +1039,7 @@ function logExercise(sIdx, eIdx) {
   const sets = exercise.sets || [];
   showModal(`
     <h4 style="margin-bottom:10px;">Registra: ${exercise.name}</h4>
-    <div style="font-size:.7rem;color:var(--text-muted);display:grid;grid-template-columns:28px 1fr 1fr 75px 38px;gap:5px;margin-bottom:6px;">
+    <div style="font-size:.7rem;color:var(--text-muted);display:grid;grid-template-columns:24px 1fr 1fr 85px 44px;gap:6px;margin-bottom:6px;font-weight:600;">
       <span>#</span><span>Kg</span><span>Reps</span><span>Recupero</span><span>✓</span>
     </div>
     ${sets.map((set, i) => `
