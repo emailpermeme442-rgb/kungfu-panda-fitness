@@ -88,7 +88,6 @@ header {
 .section-header-top { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 6px; }
 .section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; }
 
-/* FIX 1: Griglia a 4 colonne esatte per evitare qualsiasi sforo */
 .section-actions-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-bottom: 12px; }
 .section-actions-row .btn-secondary { width: 100%; text-align: center; padding: 8px 2px; font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
@@ -158,7 +157,6 @@ select, input, textarea {
 }
 select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-/* FIX 2 & 4: Griglia serie e componenti con stessa altezza e font */
 .set-row { display: grid; grid-template-columns: 24px 1fr 1fr 1fr 42px; gap: 6px; align-items: center; margin-bottom: 8px; }
 .set-row input { text-align: center; font-weight: 700; border-radius: 10px; padding: 10px 4px; font-size: 0.9rem; height: 42px; }
 
@@ -179,7 +177,6 @@ select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0
 }
 .recovery-btn.running { background: #fee2e2; border-color: #fecaca; color: #b91c1c; }
 
-/* FIX 3: Spunta grigia di base che diventa blu quando completata */
 .check-btn {
   background: #f1f5f9; 
   color: #cbd5e1; 
@@ -299,7 +296,6 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
     <div class="section-header-top">
       <div class="section-title" id="sportHeaderTitle">Sessioni Pesi</div>
     </div>
-    <!-- Pulsanti allineati perfettamente senza sforo -->
     <div class="section-actions-row">
       <button class="btn-secondary" onclick="addWeek()">＋ Settimana</button>
       <button class="btn-secondary" onclick="addNewSessionPrompt()">＋ Sessione</button>
@@ -635,7 +631,7 @@ const EX_GUIDES = {
   "Asian squat": {
     muscles: "Quadricipiti · Glutei · Caviglie · Adduttori",
     pos: "Piedi alla larghezza delle spalle o poco più, punte leggermente aperte.",
-    desc: "Scendi in squat profondo mantenendo i talloni a terra e il busto il più verticale possibile.",
+    desc: "Scendi in accosciata profondo mantenendo talloni a terra e ginocchia in linea con le punte; risali.",
     resp: "Inspira scendendo, espira risalendo.", feel: "Mobilità di caviglie e anche, quadricipiti e glutei.",
     errors: "Talloni sollevati o collasso delle ginocchia.", detail: "Usa un supporto se serve per mantenere equilibrio."
   },
@@ -1063,9 +1059,13 @@ function saveExerciseTargets(sIdx, eIdx) {
   openGymSession(sIdx);
 }
 
+let activeTimerInterval = null;
+
 function logExercise(sIdx, eIdx) {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   const sets = exercise.sets || [];
+  
   showModal(`
     <h4 style="margin-bottom:10px;">Registra: ${exercise.name}</h4>
     <div style="font-size:.7rem;color:var(--text-muted);display:grid;grid-template-columns:24px 1fr 1fr 1fr 42px;gap:6px;margin-bottom:6px;font-weight:600;">
@@ -1076,15 +1076,26 @@ function logExercise(sIdx, eIdx) {
         <b style="font-size:.8rem;">${i+1}</b>
         <input type="number" id="actualKg${i}" value="${set.actualKg ?? ''}" placeholder="${set.plannedKg ?? 'Kg'}">
         <input type="number" id="actualReps${i}" value="${set.actualReps ?? ''}" placeholder="${set.plannedReps ?? 'Reps'}">
-        <button class="recovery-btn" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${formatRecoveryTime(getRecoverySeconds(set))}</button>
+        <button class="recovery-btn ${set.recoveryStartedAt ? 'running' : ''}" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${set.recoveryStartedAt ? formatRecoveryTime(getRecoverySeconds(set)) : formatRecoveryTime(getRecoverySeconds(set))}</button>
         <button class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">✓</button>
       </div>
     `).join('')}
     <button class="btn-gold" style="margin-top:12px;" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
   `);
+
+  // Avvia il loop di aggiornamento dei secondi in tempo reale
+  activeTimerInterval = setInterval(() => {
+    sets.forEach((set, i) => {
+      const btn = document.getElementById(`recoveryBtn${i}`);
+      if (btn && set.recoveryStartedAt) {
+        btn.textContent = formatRecoveryTime(getRecoverySeconds(set));
+      }
+    });
+  }, 1000);
 }
 
 function saveExerciseLog(sIdx, eIdx) {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   exercise.sets.forEach((set, i) => {
     const kg = document.getElementById(`actualKg${i}`).value;
@@ -1129,12 +1140,13 @@ function toggleRecovery(sIdx, eIdx, setIdx) {
   } else {
     set.recoveryStartedAt = Date.now();
     btn.classList.add('running');
-    btn.textContent = 'Stop';
+    btn.textContent = formatRecoveryTime(0);
   }
   save();
 }
 
 function openCardioSession(idx) {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
   document.getElementById('modalTitle').textContent = s.name;
   showModal(`
@@ -1165,6 +1177,7 @@ function saveCardioSession(idx) {
 }
 
 function setupProgress() {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const all = new Set();
   db.cycles.forEach(c => c.weeks.forEach(w => (w.sports.pesi || []).forEach(s => (s.items || []).forEach(e => all.add(e.name)))));
   const sel = document.getElementById('progressExercise');
@@ -1270,6 +1283,7 @@ function drawLine(id, labels, values) {
 }
 
 function createCycle() {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const suggestedName = `Ciclo ${db.cycles.length + 1}`;
   showModal(`
     <h4 style="margin-bottom:10px;">Nuovo ciclo</h4>
@@ -1345,6 +1359,7 @@ function downloadFile(blob, filename) {
 }
 
 function exportReportPT() {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   let textLines = [];
   textLines.push("========================================");
   textLines.push("SCHEDA ALLENAMENTO - REPORT PT");
@@ -1411,6 +1426,7 @@ function exportReportPT() {
 }
 
 function exportBackup() {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const blob = new Blob(
     [JSON.stringify(db, null, 2)],
     { type: 'application/json;charset=utf-8' }
@@ -1442,7 +1458,10 @@ function importBackup(event) {
 }
 
 function showModal(html) { document.getElementById('modalBody').innerHTML = html; document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function closeModal() { 
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
+  document.getElementById('modal').classList.remove('open'); 
+}
 
 fillCycleSelect(); switchSport(currentSport);
 </script>
