@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+"""<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -828,18 +828,21 @@ function openDeleteMenu() {
   const cycle = db.cycles[ci];
   const sessions = cycle?.weeks?.[wi]?.sports?.[currentSport] || [];
   const sessionOptions = sessions.map((s, i) => `<option value="${i}">${s.name}</option>`).join('');
-  showModal(`
-    <h4 style="margin-bottom:12px;">Cosa vuoi eliminare?</h4>
-    <button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="deleteWeek()">🗓️ Settimana selezionata</button>
-    <div style="margin:4px 0 12px;">
-      <label style="font-size:.75rem;color:var(--text-muted);display:block;margin-bottom:5px;">Sessione della settimana selezionata</label>
-      <select id="deleteSessionSelect" ${sessions.length ? '' : 'disabled'}>
-        ${sessionOptions || '<option value="">Nessuna sessione disponibile</option>'}
-      </select>
-      <button class="btn-secondary" style="width:100%;margin-top:7px;color:#dc2626;border-color:#fecaca;" ${sessions.length ? '' : 'disabled'} onclick="deleteSelectedSession()">🗑️ Elimina sessione</button>
-    </div>
-    <button class="btn-secondary" style="width:100%;color:#dc2626;border-color:#fecaca;" onclick="deleteCurrentCycle()">🗂️ Ciclo selezionato</button>
-  `);
+  pushModalState('deleteMenu', {
+    title: 'Elimina',
+    html: `
+      <h4 style="margin-bottom:12px;">Cosa vuoi eliminare?</h4>
+      <button class="btn-secondary" style="width:100%; margin-bottom:8px;" onclick="deleteWeek()">🗓️ Settimana selezionata</button>
+      <div style="margin:4px 0 12px;">
+        <label style="font-size:.75rem;color:var(--text-muted);display:block;margin-bottom:5px;">Sessione della settimana selezionata</label>
+        <select id="deleteSessionSelect" ${sessions.length ? '' : 'disabled'}>
+          ${sessionOptions || '<option value="">Nessuna sessione disponibile</option>'}
+        </select>
+        <button class="btn-secondary" style="width:100%;margin-top:7px;color:#dc2626;border-color:#fecaca;" ${sessions.length ? '' : 'disabled'} onclick="deleteSelectedSession()">🗑️ Elimina sessione</button>
+      </div>
+      <button class="btn-secondary" style="width:100%;color:#dc2626;border-color:#fecaca;" onclick="deleteCurrentCycle()">🗂️ Ciclo selezionato</button>
+    `
+  });
 }
 
 function deleteWeek() {
@@ -854,7 +857,7 @@ function deleteWeek() {
   renumberWeeks(cycle);
   wi = Math.min(wi, cycle.weeks.length - 1);
   db.activeWeek = wi;
-  closeModal();
+  closeModalFully();
   refresh();
 }
 
@@ -899,9 +902,8 @@ function openSession(idx) {
   else openCardioSession(idx);
 }
 
-function openGymSession(idx) {
+function openGymSession(idx, isReplace = false) {
   let s = db.cycles[ci].weeks[wi].sports.pesi[idx];
-  document.getElementById('modalTitle').textContent = s.name;
   let body = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn-secondary" onclick="renameSession('pesi',${idx})">✎ Rinomina sessione</button></div><p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Seleziona <b>Registra</b> per inserire i carichi o <b>＋ Esercizio</b> per personalizzare.</p>`;
 
   s.items.forEach((e, ei) => {
@@ -936,8 +938,14 @@ function openGymSession(idx) {
       <button class="btn-gold" style="flex:1; ${s.completed ? 'background:#16a34a;border-color:#16a34a;' : ''}" onclick="toggleSessionFinished('pesi',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
     </div>
   `;
-  modalStack.length = 0;
-  showModal(body, '', true);
+
+  const statePayload = { type: 'gymSession', sIdx: idx };
+  const title = s.name;
+  if (isReplace) {
+    replaceModalState(title, body, statePayload);
+  } else {
+    pushModalState(title, body, statePayload);
+  }
 }
 
 function renameSession(sport, sIdx) {
@@ -949,8 +957,8 @@ function renameSession(sport, sIdx) {
   if (!name) return alert('Il nome sessione non può essere vuoto.');
   session.name = name;
   save();
-  if (sport === 'pesi') openGymSession(sIdx);
-  else openCardioSession(sIdx);
+  if (sport === 'pesi') openGymSession(sIdx, true);
+  else openCardioSession(sIdx, true);
   renderWorkoutList();
 }
 
@@ -962,7 +970,7 @@ function saveSessionNotes(sport, sIdx, val) {
 
 function addNewSessionPrompt() {
   let sportName = currentSport.toUpperCase();
-  showModal(`
+  pushModalState('Nuova Sessione', `
     <h4 style="margin-bottom:10px; color:#0f172a; font-size:1rem;">Nuova Sessione (${sportName})</h4>
     <label style="font-size:0.72rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:4px;">Nome Sessione</label>
     <input type="text" id="newSessionName" placeholder="es. Sessione Straordinaria" style="margin-bottom:14px;">
@@ -981,15 +989,16 @@ function confirmAddSession() {
     : { name, distance: 0, minutes: 30, notes: '', logged: false, completed: false };
 
   week.sports[currentSport].push(newS);
-  closeModal(); refresh();
+  history.back(); 
+  refresh();
 }
 
 function toggleSessionFinished(sport, sIdx) {
   const session = db.cycles[ci].weeks[wi].sports[sport][sIdx];
   session.completed = !session.completed;
   save();
-  if (sport === 'pesi') openGymSession(sIdx);
-  else openCardioSession(sIdx);
+  if (sport === 'pesi') openGymSession(sIdx, true);
+  else openCardioSession(sIdx, true);
   renderWorkoutList();
 }
 
@@ -1002,7 +1011,7 @@ function deleteSession(idx) {
   const name = sessions[idx]?.name || 'Sessione';
   if (!confirm(`Eliminare definitivamente "${name}"?`)) return;
   sessions.splice(idx, 1);
-  closeModal();
+  closeModalFully();
   refresh();
 }
 
@@ -1011,11 +1020,11 @@ function deleteExercise(sIdx, eIdx) {
   if (!confirm(`Rimuovere ${s.items[eIdx].name}?`)) return;
   s.items.splice(eIdx, 1);
   save();
-  openGymSession(sIdx);
+  openGymSession(sIdx, true);
 }
 
 function addNewExercisePrompt(sIdx) {
-  showModal(`
+  pushModalState('Aggiungi Esercizio', `
     <h4 style="margin-bottom:10px;">Aggiungi Esercizio</h4>
     <input type="text" id="exSearch" placeholder="Cerca o scrivi esercizio..." oninput="filterExerciseOptions()" style="margin-bottom:8px;">
     <select id="exSelect" size="5" style="margin-bottom:10px;">${Object.keys(EX_GUIDES).map(n => `<option value="${n}">${n}</option>`).join('')}</select>
@@ -1047,13 +1056,14 @@ function confirmAddExercise(sIdx) {
   const s = db.cycles[ci].weeks[wi].sports.pesi[sIdx];
   s.items.push(ex(name, kg, reps));
   save();
-  openGymSession(sIdx);
+  history.back();
+  openGymSession(sIdx, true);
 }
 
 function editExerciseTargets(sIdx, eIdx) {
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   const sets = exercise.sets || [];
-  showModal(`
+  pushModalState('Modifica Target', `
     <h4 style="margin-bottom:10px;">Target: ${exercise.name}</h4>
     <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px;">Modifica carico e ripetizioni previste per ogni serie.</p>
     <div id="targetRows">
@@ -1074,6 +1084,7 @@ function addTargetSet(sIdx, eIdx) {
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   exercise.sets.push({ plannedKg: exercise.kg || 0, plannedReps: exercise.reps || 8, actualKg: '', actualReps: '', done: false, recoverySeconds: 0 });
   save();
+  history.back();
   editExerciseTargets(sIdx, eIdx);
 }
 
@@ -1093,7 +1104,8 @@ function saveExerciseTargets(sIdx, eIdx) {
   exercise.kg = sets[0]?.plannedKg ?? exercise.kg;
   exercise.reps = sets[0]?.plannedReps ?? exercise.reps;
   save();
-  openGymSession(sIdx);
+  history.back();
+  openGymSession(sIdx, true);
 }
 
 let activeTimerInterval = null;
@@ -1103,7 +1115,7 @@ function logExercise(sIdx, eIdx) {
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   const sets = exercise.sets || [];
   
-  showModal(`
+  const body = `
     <h4 class="register-heading">${exercise.name}</h4>
     <div class="register-columns">
       <span>#</span><span>Kg</span><span>Reps</span><span>Recupero</span><span>✓</span>
@@ -1113,15 +1125,15 @@ function logExercise(sIdx, eIdx) {
         <b style="font-size:.8rem;">${i+1}</b>
         <input type="number" id="actualKg${i}" value="${set.actualKg ?? ''}" placeholder="${set.plannedKg ?? 'Kg'}">
         <input type="number" id="actualReps${i}" value="${set.actualReps ?? ''}" placeholder="${set.plannedReps ?? 'Reps'}">
-        <button class="recovery-btn ${set.recoveryStartedAt ? 'running' : ''}" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${set.recoveryStartedAt ? formatRecoveryTime(getRecoverySeconds(set)) : formatRecoveryTime(getRecoverySeconds(set))}</button>
+        <button class="recovery-btn ${set.recoveryStartedAt ? 'running' : ''}" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${formatRecoveryTime(getRecoverySeconds(set))}</button>
         <button class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">✓</button>
       </div>
     `).join('')}
     <button class="btn-gold register-save" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
-  `, 'register');
-  document.getElementById('modalTitle').textContent = 'Registra esercizio';
+  `;
 
-  // Avvia il loop di aggiornamento dei secondi in tempo reale
+  pushModalState('Registra esercizio', body, { type: 'register' }, 'register');
+
   activeTimerInterval = setInterval(() => {
     sets.forEach((set, i) => {
       const btn = document.getElementById(`recoveryBtn${i}`);
@@ -1142,7 +1154,8 @@ function saveExerciseLog(sIdx, eIdx) {
     set.actualReps = reps === '' ? '' : Number(reps);
   });
   save();
-  openGymSession(sIdx);
+  history.back();
+  openGymSession(sIdx, true);
 }
 
 function toggleSetDone(sIdx, eIdx, setIdx) {
@@ -1150,7 +1163,7 @@ function toggleSetDone(sIdx, eIdx, setIdx) {
   set.done = !set.done;
   save();
   const btn = document.getElementById(`doneBtn${setIdx}`);
-  btn.classList.toggle('done', set.done);
+  if (btn) btn.classList.toggle('done', set.done);
 }
 
 function getRecoverySeconds(set) {
@@ -1173,22 +1186,24 @@ function toggleRecovery(sIdx, eIdx, setIdx) {
   if (set.recoveryStartedAt) {
     set.recoverySeconds = getRecoverySeconds(set);
     delete set.recoveryStartedAt;
-    btn.classList.remove('running');
-    btn.textContent = formatRecoveryTime(set.recoverySeconds);
+    if (btn) {
+      btn.classList.remove('running');
+      btn.textContent = formatRecoveryTime(set.recoverySeconds);
+    }
   } else {
     set.recoveryStartedAt = Date.now();
-    btn.classList.add('running');
-    btn.textContent = formatRecoveryTime(0);
+    if (btn) {
+      btn.classList.add('running');
+      btn.textContent = formatRecoveryTime(0);
+    }
   }
   save();
 }
 
-function openCardioSession(idx) {
+function openCardioSession(idx, isReplace = false) {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
-  document.getElementById('modalTitle').textContent = s.name;
-  modalStack.length = 0;
-  showModal(`
+  const body = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h4 style="margin:0;">${s.name}</h4><button class="btn-secondary" onclick="renameSession('${currentSport}',${idx})">✎ Rinomina</button></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div><label style="font-size:.72rem;color:var(--text-muted);">Distanza (m)</label><input type="number" id="cardioDistance" value="${s.distance || 0}"></div>
@@ -1198,7 +1213,12 @@ function openCardioSession(idx) {
     <textarea id="cardioNotes" rows="2" oninput="saveCardioNotes(${idx},this.value)">${s.notes || ''}</textarea>
     <button class="btn-gold" style="margin-top:12px;" onclick="saveCardioSession(${idx})">Salva sessione</button>
     <button class="btn-gold" style="margin-top:8px;${s.completed ? 'background:#16a34a;' : ''}" onclick="toggleSessionFinished('${currentSport}',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
-  `);
+  `;
+  if (isReplace) {
+    replaceModalState(s.name, body, { type: 'cardioSession', idx });
+  } else {
+    pushModalState(s.name, body, { type: 'cardioSession', idx });
+  }
 }
 
 function saveCardioNotes(idx, val) {
@@ -1212,7 +1232,9 @@ function saveCardioSession(idx) {
   s.minutes = Number(document.getElementById('cardioMinutes').value) || 0;
   s.notes = document.getElementById('cardioNotes').value;
   s.logged = true;
-  save(); closeModal(); refresh();
+  save(); 
+  history.back(); 
+  refresh();
 }
 
 function setupProgress() {
@@ -1324,7 +1346,7 @@ function drawLine(id, labels, values) {
 function createCycle() {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const suggestedName = `Ciclo ${db.cycles.length + 1}`;
-  showModal(`
+  pushModalState('Nuovo ciclo', `
     <h4 style="margin-bottom:10px;">Nuovo ciclo</h4>
     <label style="font-size:.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">Nome ciclo</label>
     <input id="newCycleName" value="${suggestedName}" style="margin-bottom:10px;">
@@ -1352,7 +1374,7 @@ function confirmCreateCycle() {
   wi = 0;
   db.activeCycle = ci;
   db.activeWeek = wi;
-  closeModal();
+  closeModalFully();
   refresh();
 }
 
@@ -1371,7 +1393,7 @@ function deleteCurrentCycle() {
   db.activeCycle = ci;
   db.activeWeek = wi;
   save();
-  closeModal();
+  closeModalFully();
   refresh();
 }
 
@@ -1496,41 +1518,118 @@ function importBackup(event) {
   reader.readAsText(file);
 }
 
-const modalStack = [];
+/* ==========================================================================
+   SINGLE-SOURCE-OF-TRUTH HISTORY API NAVIGATION SYSTEM
+   ========================================================================== */
 
-function showModal(html, mode = '', replaceCurrent = false) {
+// Inizializzazione dello stato base (Home) se non presente
+if (!history.state || history.state.modalDepth === undefined) {
+  history.replaceState({ modalDepth: 0, modalType: null }, '');
+}
+
+window.addEventListener('popstate', (event) => {
+  const state = event.state;
+  const modalDepth = state && state.modalDepth !== undefined ? state.modalDepth : 0;
+
+  if (activeTimerInterval) {
+    clearInterval(activeTimerInterval);
+    activeTimerInterval = null;
+  }
+
+  if (modalDepth === 0) {
+    // Chiusura totale del modale (ritorno alla home)
+    const modal = document.getElementById('modal');
+    modal.classList.remove('open', 'register-mode');
+  } else if (state && state.modalData) {
+    // Ripristino dello stato visivo del modale basato sui dati salvati nello history state
+    const modal = document.getElementById('modal');
+    const body = document.getElementById('modalBody');
+    document.getElementById('modalTitle').textContent = state.modalData.title;
+    body.innerHTML = state.modalData.html;
+    modal.classList.toggle('register-mode', state.modalData.mode === 'register');
+    modal.classList.add('open');
+  }
+});
+
+function pushModalState(title, html, extraPayload = {}, mode = '') {
+  const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
+  const newDepth = currentDepth + 1;
+  const modalData = { title, html, mode, extra: extraPayload };
+
+  history.pushState({ modalDepth: newDepth, modalData }, '');
+
   const modal = document.getElementById('modal');
   const body = document.getElementById('modalBody');
-  if (modal.classList.contains('open') && !replaceCurrent) {
-    modalStack.push({
-      title: document.getElementById('modalTitle').textContent,
-      html: body.innerHTML,
-      mode: modal.classList.contains('register-mode') ? 'register' : ''
-    });
-  } else if (replaceCurrent && modal.classList.contains('open')) {
-    // La schermata corrente viene sostituita, senza aggiungere un livello allo storico.
-  }
-  modal.classList.toggle('register-mode', mode === 'register');
+  document.getElementById('modalTitle').textContent = title;
   body.innerHTML = html;
+  modal.classList.toggle('register-mode', mode === 'register');
+  modal.classList.add('open');
+}
+
+function replaceModalState(title, html, extraPayload = {}, mode = '') {
+  const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
+  const modalData = { title, html, mode, extra: extraPayload };
+
+  history.replaceState({ modalDepth: currentDepth, modalData }, '');
+
+  const modal = document.getElementById('modal');
+  const body = document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent = title;
+  body.innerHTML = html;
+  modal.classList.toggle('register-mode', mode === 'register');
   modal.classList.add('open');
 }
 
 function backModal() {
-  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
-  const previous = modalStack.pop();
-  if (!previous) return closeModal();
-  document.getElementById('modalTitle').textContent = previous.title;
-  document.getElementById('modalBody').innerHTML = previous.html;
-  document.getElementById('modal').classList.toggle('register-mode', previous.mode === 'register');
+  if (activeTimerInterval) {
+    clearInterval(activeTimerInterval);
+    activeTimerInterval = null;
+  }
+  const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
+  if (currentDepth > 0) {
+    history.back();
+  } else {
+    closeModalFully();
+  }
 }
 
 function closeModal() {
-  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
-  modalStack.length = 0;
-  document.getElementById('modal').classList.remove('open', 'register-mode');
+  backModal();
 }
 
-fillCycleSelect(); switchSport(currentSport);
+function closeModalFully() {
+  if (activeTimerInterval) {
+    clearInterval(activeTimerInterval);
+    activeTimerInterval = null;
+  }
+  const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
+  if (currentDepth > 0) {
+    history.go(-currentDepth);
+  } else {
+    const modal = document.getElementById('modal');
+    modal.classList.remove('open', 'register-mode');
+  }
+}
+
+// Hook per integrazione nativa Android WebView (se invocato dall'activity Kotlin)
+window.handleNativeBack = function() {
+  const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
+  if (currentDepth > 0) {
+    backModal();
+    return true; // Gestito internamente dalla web app
+  }
+  return false; // Lascia propagare l'evento all'app nativa (es. chiusura app)
+};
+
+fillCycleSelect(); 
+switchSport(currentSport);
 </script>
 </body>
 </html>
+"""
+
+# Let's write the file to disk so the user can use it.
+with open("KFP_Fitness_Seven_Log_Restyling_v3.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+print("File created successfully.")
