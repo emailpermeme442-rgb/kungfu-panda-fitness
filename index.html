@@ -157,17 +157,17 @@ select, input, textarea {
 }
 select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-.set-row { display: grid; grid-template-columns: 24px 1fr 1fr 1fr 42px; gap: 6px; align-items: center; margin-bottom: 8px; }
-.set-row input { text-align: center; font-weight: 700; border-radius: 10px; padding: 10px 4px; font-size: 0.9rem; height: 42px; }
+.set-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.15fr) 48px; gap: 8px; align-items: center; margin-bottom: 12px; }
+.set-row input { text-align: center; font-weight: 800; border-radius: 12px; padding: 10px 5px; font-size: 1.05rem; height: 54px; min-width: 0; }
 
 .recovery-btn { 
   border: 1px solid var(--border-subtle); 
   background: #f1f5f9; 
   color: var(--text-main); 
   border-radius: 10px; 
-  height: 42px; 
-  padding: 0 4px; 
-  font-size: 0.9rem; 
+  height: 54px; 
+  padding: 0 5px; 
+  font-size: 1rem; 
   font-weight: 700; 
   white-space: nowrap; 
   cursor: pointer; 
@@ -181,8 +181,8 @@ select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0
   background: #f1f5f9; 
   color: #cbd5e1; 
   border: 1px solid var(--border-subtle);
-  height: 42px; 
-  width: 42px; 
+  height: 48px; 
+  width: 48px; 
   border-radius: 10px; 
   font-weight: 900; 
   cursor: pointer;
@@ -211,15 +211,25 @@ select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0
 .nav-item.active { color: #2563eb; }
 
 .modal {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px);
-  z-index: 2000; display: none; align-items: flex-end; justify-content: center;
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.64); backdrop-filter: blur(8px);
+  z-index: 2000; display: none; align-items: center; justify-content: center; padding: 2vh 12px;
 }
 .modal.open { display: flex; }
 .sheet {
-  background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 28px 28px 0 0; 
-  width: 100%; max-width: 600px; max-height: 88vh; overflow-y: auto; padding: 20px;
-  box-shadow: 0 -20px 40px rgba(0,0,0,0.15); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 24px;
+  width: 100%; max-width: 760px; max-height: 94vh; overflow-y: auto; padding: 24px;
+  box-shadow: 0 20px 55px rgba(0,0,0,0.2); animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.modal.register-mode { padding: 0; align-items: stretch; }
+.modal.register-mode .sheet {
+  width: 100%; max-width: 900px; height: 100%; max-height: 100%;
+  border-radius: 0; border: 0; padding: max(22px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
+  box-shadow: none;
+}
+.register-heading { font-size: clamp(1.25rem, 4vw, 1.65rem); line-height: 1.2; font-weight: 900; margin-bottom: 22px; color: var(--text-main); }
+.register-columns { font-size: .82rem; color: var(--text-muted); display: grid; grid-template-columns: 30px minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) 48px; gap: 8px; margin-bottom: 10px; font-weight: 800; text-align: center; }
+.register-save { margin-top: 22px !important; min-height: 56px; font-size: 1.05rem; }
+
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .view { display: none; }
@@ -235,7 +245,19 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
   .profile-info { width: 100%; flex: 0 0 auto; }
   .profile-name { font-size: 1.05rem; white-space: nowrap; }
   .header-actions { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  .header-actions .btn-secondary { min-width: 0; padding: 8px 4px; font-size: 0.68rem; text-align: center; }
+  .header-actions .btn-secondary { min-width: 0; padding: 8px 4px; font-size: 0.72rem; text-align: center; }
+  .container { padding: 18px 14px; }
+  .section-title { font-size: 1.25rem; }
+  .card { padding: 18px; }
+  .modal { padding: 0; align-items: stretch; }
+  .sheet { width: 100%; max-width: none; height: 100%; max-height: 100%; border-radius: 0; padding: max(20px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom)); }
+  .modal.register-mode .sheet { padding-left: 14px; padding-right: 14px; }
+  .register-heading { margin-bottom: 24px; }
+  .register-columns { grid-template-columns: 26px minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr) 44px; gap: 5px; font-size: .72rem; }
+  .set-row { grid-template-columns: 26px minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr) 44px; gap: 5px; }
+  .set-row input { height: 52px; font-size: 1rem; }
+  .recovery-btn { height: 52px; font-size: .9rem; }
+  .check-btn { width: 44px; height: 48px; }
 }
 </style>
 </head>
@@ -329,11 +351,11 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
   </button>
 </nav>
 
-<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+<div class="modal" id="modal" onclick="if(event.target===this)backModal()">
   <div class="sheet">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
       <h3 id="modalTitle" style="color: #0f172a; font-size: 1.1rem; font-weight: 800;">Dettaglio</h3>
-      <button class="btn-secondary" onclick="closeModal()">✕ Chiudi</button>
+      <button class="btn-secondary" onclick="backModal()">← Indietro</button>
     </div>
     <div id="modalBody"></div>
   </div>
@@ -880,7 +902,7 @@ function openSession(idx) {
 function openGymSession(idx) {
   let s = db.cycles[ci].weeks[wi].sports.pesi[idx];
   document.getElementById('modalTitle').textContent = s.name;
-  let body = `<p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Seleziona <b>Registra</b> per inserire i carichi o <b>＋ Esercizio</b> per personalizzare.</p>`;
+  let body = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn-secondary" onclick="renameSession('pesi',${idx})">✎ Rinomina sessione</button></div><p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Seleziona <b>Registra</b> per inserire i carichi o <b>＋ Esercizio</b> per personalizzare.</p>`;
 
   s.items.forEach((e, ei) => {
     body += `
@@ -914,7 +936,22 @@ function openGymSession(idx) {
       <button class="btn-gold" style="flex:1; ${s.completed ? 'background:#16a34a;border-color:#16a34a;' : ''}" onclick="toggleSessionFinished('pesi',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
     </div>
   `;
-  showModal(body);
+  modalStack.length = 0;
+  showModal(body, '', true);
+}
+
+function renameSession(sport, sIdx) {
+  const session = db.cycles[ci].weeks[wi].sports[sport]?.[sIdx];
+  if (!session) return;
+  const updated = prompt('Nuovo nome sessione:', session.name || '');
+  if (updated === null) return;
+  const name = updated.trim();
+  if (!name) return alert('Il nome sessione non può essere vuoto.');
+  session.name = name;
+  save();
+  if (sport === 'pesi') openGymSession(sIdx);
+  else openCardioSession(sIdx);
+  renderWorkoutList();
 }
 
 function saveSessionNotes(sport, sIdx, val) {
@@ -1067,8 +1104,8 @@ function logExercise(sIdx, eIdx) {
   const sets = exercise.sets || [];
   
   showModal(`
-    <h4 style="margin-bottom:10px;">Registra: ${exercise.name}</h4>
-    <div style="font-size:.7rem;color:var(--text-muted);display:grid;grid-template-columns:24px 1fr 1fr 1fr 42px;gap:6px;margin-bottom:6px;font-weight:600;">
+    <h4 class="register-heading">${exercise.name}</h4>
+    <div class="register-columns">
       <span>#</span><span>Kg</span><span>Reps</span><span>Recupero</span><span>✓</span>
     </div>
     ${sets.map((set, i) => `
@@ -1080,8 +1117,9 @@ function logExercise(sIdx, eIdx) {
         <button class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">✓</button>
       </div>
     `).join('')}
-    <button class="btn-gold" style="margin-top:12px;" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
-  `);
+    <button class="btn-gold register-save" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
+  `, 'register');
+  document.getElementById('modalTitle').textContent = 'Registra esercizio';
 
   // Avvia il loop di aggiornamento dei secondi in tempo reale
   activeTimerInterval = setInterval(() => {
@@ -1149,8 +1187,9 @@ function openCardioSession(idx) {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
   document.getElementById('modalTitle').textContent = s.name;
+  modalStack.length = 0;
   showModal(`
-    <h4 style="margin-bottom:10px;">${s.name}</h4>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h4 style="margin:0;">${s.name}</h4><button class="btn-secondary" onclick="renameSession('${currentSport}',${idx})">✎ Rinomina</button></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
       <div><label style="font-size:.72rem;color:var(--text-muted);">Distanza (m)</label><input type="number" id="cardioDistance" value="${s.distance || 0}"></div>
       <div><label style="font-size:.72rem;color:var(--text-muted);">Durata (min)</label><input type="number" id="cardioMinutes" value="${s.minutes || 0}"></div>
@@ -1457,10 +1496,38 @@ function importBackup(event) {
   reader.readAsText(file);
 }
 
-function showModal(html) { document.getElementById('modalBody').innerHTML = html; document.getElementById('modal').classList.add('open'); }
-function closeModal() { 
+const modalStack = [];
+
+function showModal(html, mode = '', replaceCurrent = false) {
+  const modal = document.getElementById('modal');
+  const body = document.getElementById('modalBody');
+  if (modal.classList.contains('open') && !replaceCurrent) {
+    modalStack.push({
+      title: document.getElementById('modalTitle').textContent,
+      html: body.innerHTML,
+      mode: modal.classList.contains('register-mode') ? 'register' : ''
+    });
+  } else if (replaceCurrent && modal.classList.contains('open')) {
+    // La schermata corrente viene sostituita, senza aggiungere un livello allo storico.
+  }
+  modal.classList.toggle('register-mode', mode === 'register');
+  body.innerHTML = html;
+  modal.classList.add('open');
+}
+
+function backModal() {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
-  document.getElementById('modal').classList.remove('open'); 
+  const previous = modalStack.pop();
+  if (!previous) return closeModal();
+  document.getElementById('modalTitle').textContent = previous.title;
+  document.getElementById('modalBody').innerHTML = previous.html;
+  document.getElementById('modal').classList.toggle('register-mode', previous.mode === 'register');
+}
+
+function closeModal() {
+  if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
+  modalStack.length = 0;
+  document.getElementById('modal').classList.remove('open', 'register-mode');
 }
 
 fillCycleSelect(); switchSport(currentSport);
