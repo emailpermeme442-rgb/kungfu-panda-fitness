@@ -3,241 +3,555 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f1f5f9">
+<meta name="theme-color" content="#f3f6fb">
 <link rel="manifest" href="manifest.json">
 <title>Kung Fu Panda — Seven Fitness Log</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg-main: #f8fafc;
+  --bg-main: #f3f6fb;
   --bg-card: #ffffff;
-  --border-subtle: #e2e8f0;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
+  --border-subtle: #e5eaf2;
+  --text-main: #172033;
+  --text-muted: #68758b;
 
+  /* Palette Sport */
   --fut-gold: #d97706;
+  --fut-gold-dark: #b45309;
   --fut-gold-subtle: rgba(245, 158, 11, 0.12);
+  --fut-gold-soft: #fffbeb;
+
   --fut-cyan: #0891b2;
+  --fut-cyan-dark: #0e7490;
   --fut-cyan-subtle: rgba(6, 182, 212, 0.12);
+  --fut-cyan-soft: #ecfeff;
+
   --fut-green: #059669;
+  --fut-green-dark: #047857;
   --fut-green-subtle: rgba(16, 185, 129, 0.12);
-  --fut-purple: #9333ea;
-  --fut-purple-subtle: rgba(168, 85, 247, 0.12);
+  --fut-green-soft: #ecfdf5;
+
+  --fut-purple: #7c3aed;
+  --fut-purple-dark: #6d28d9;
+  --fut-purple-subtle: rgba(124, 58, 237, 0.12);
+  --fut-purple-soft: #f5f3ff;
+
+  /* Tema dinamico attivo (default Pesi / Ambra) */
+  --sport-accent: #d97706;
+  --sport-dark: #b45309;
+  --sport-subtle: rgba(245, 158, 11, 0.12);
+  --sport-soft: #fffbeb;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-body { 
-  background-color: var(--bg-main); 
-  color: var(--text-main); 
-  padding-bottom: 110px; 
+
+body {
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(37,99,235,.06), transparent 34rem),
+    var(--bg-main);
+  color: var(--text-main);
+  padding-bottom: 110px;
   min-height: 100vh;
-  -webkit-font-smoothing: antialiased; 
+  -webkit-font-smoothing: antialiased;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 input[type=number] { -moz-appearance: textfield; }
 
 header {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 12px 16px;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  box-shadow: 0 5px 22px rgba(15, 23, 42, 0.035);
   position: sticky; top: 0; z-index: 100;
 }
 .header-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .profile-info { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .avatar {
-  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  background: linear-gradient(135deg, #ffffff, #f1f5f9);
+  border: 2px solid var(--sport-accent);
   display: flex; align-items: center; justify-content: center;
-  color: #ffffff; font-weight: 900; font-size: 0.95rem;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  font-size: 1.45rem; line-height: 1;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  transition: border-color 0.2s ease;
 }
 .profile-name { font-size: 1rem; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .header-actions { display: flex; gap: 5px; flex-shrink: 0; }
 .header-actions .btn-secondary { padding: 6px 10px; font-size: 0.72rem; }
 
-.container { max-width: 600px; margin: 0 auto; padding: 16px 12px; }
+.container { max-width: 600px; margin: 0 auto; padding: 18px 12px; }
 
 .sports-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
 .sport-card {
-  background: var(--bg-card); 
-  border-radius: 16px; 
-  padding: 12px 4px; 
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 12px 4px;
   text-align: center;
-  cursor: pointer; 
-  border: 2px solid var(--border-subtle); 
+  cursor: pointer;
+  border: 1.5px solid var(--border-subtle);
   transition: all 0.2s ease;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 82px;
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.045);
 }
-.sport-card .icon { font-size: 1.3rem; }
-.sport-card .title { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; }
+.sport-card:active { transform: scale(.97); }
+.sport-card .icon { font-size: 1.5rem; }
+.sport-card .title { font-size: 0.7rem; font-weight: 800; letter-spacing: 0.7px; }
 
 .sport-card.pesi.active { background: var(--fut-gold-subtle); border-color: var(--fut-gold); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2); }
 .sport-card.nuoto.active { background: var(--fut-cyan-subtle); border-color: var(--fut-cyan); box-shadow: 0 4px 12px rgba(8, 145, 178, 0.2); }
 .sport-card.corsa.active { background: var(--fut-green-subtle); border-color: var(--fut-green); box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2); }
-.sport-card.bici.active { background: var(--fut-purple-subtle); border-color: var(--fut-purple); box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2); }
+.sport-card.bici.active { background: var(--fut-purple-subtle); border-color: var(--fut-purple); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2); }
 
 .section-header-top { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; margin-bottom: 6px; }
-.section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; }
+.section-title { font-size: 1.1rem; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
 
-.section-actions-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; margin-bottom: 12px; }
-.section-actions-row .btn-secondary { width: 100%; text-align: center; padding: 8px 2px; font-size: 0.65rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.section-actions-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-bottom: 12px; }
+.section-actions-row .btn-secondary {
+  width: 100%; text-align: center; padding: 8px 2px; font-size: 0.65rem;
+  min-height: 38px; border-radius: 12px; background: #fff; border-color: #e2e8f0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.035);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 
 .card {
-  background: var(--bg-card); 
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px; 
-  padding: 16px; 
-  margin-bottom: 14px; 
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  background: var(--bg-card);
+  border: 1px solid rgba(203, 213, 225, 0.72);
+  border-radius: 20px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
 }
-.card-clickable { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.card-clickable { cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease; border-left: 4px solid var(--sport-accent); }
 .card-clickable:hover { box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.1); transform: translateY(-1px); }
-.card-clickable:active { transform: scale(0.98); }
+.card-clickable:active { transform: scale(.985); box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08); }
 
+/* Card Esercizio nella lista sessione */
 .ex-card {
-  background: #f8fafc; 
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px; 
-  padding: 14px; 
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border: 1px solid #e6ebf2;
+  border-left: 3.5px solid var(--sport-accent);
+  border-radius: 17px;
+  padding: 14px;
   margin-bottom: 10px;
 }
-.ex-title { font-size: 1rem; font-weight: 700; color: #d97706; }
+.ex-title { font-size: 0.98rem; font-weight: 800; color: #0f172a; line-height: 1.25; }
+.ex-muscles-sub { font-size: 0.72rem; font-weight: 600; color: var(--sport-dark); margin-top: 3px; }
+.ex-progress-wrap { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.ex-progress-bar { flex: 1; height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.ex-progress-fill { height: 100%; background: var(--sport-accent); border-radius: 999px; transition: width 0.25s ease; }
+.ex-progress-fill.complete { background: #16a34a; }
+.ex-progress-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); white-space: nowrap; }
 
 .btn-gold {
-  background: #2563eb; 
+  background: linear-gradient(135deg, var(--sport-accent), var(--sport-dark));
   color: #ffffff;
-  border: none; 
-  border-radius: 9999px; 
-  padding: 12px 20px; 
-  font-weight: 800; 
-  font-size: 0.9rem;
-  width: 100%; 
-  cursor: pointer; 
-  text-align: center; 
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  border: none;
+  border-radius: 9999px;
+  padding: 12px 20px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  width: 100%;
+  cursor: pointer;
+  text-align: center;
+  box-shadow: 0 7px 18px rgba(15, 23, 42, 0.15);
+  transition: transform 0.15s ease, filter 0.15s ease;
 }
 .btn-gold:active { transform: scale(0.98); }
 
 .btn-secondary {
-  background: #f1f5f9; 
-  color: #334155; 
+  background: #f1f5f9;
+  color: #334155;
   border: 1px solid var(--border-subtle);
-  border-radius: 9999px; 
-  padding: 8px 12px; 
-  font-weight: 700; 
-  font-size: 0.75rem; 
+  border-radius: 9999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
   cursor: pointer;
   white-space: nowrap;
+  transition: background .15s ease, transform .15s ease, border-color .15s ease;
 }
 .btn-secondary:hover { background: #e2e8f0; }
+.btn-secondary:active { transform: scale(.97); }
 
 .btn-danger-icon {
   background: none; border: none; color: #ef4444; font-weight: bold; font-size: 1rem; cursor: pointer; padding: 4px;
 }
 
 select, input, textarea {
-  width: 100%; 
-  background: #f8fafc; 
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px; 
-  color: #0f172a; 
-  padding: 10px 14px; 
-  font-size: 0.9rem; 
+  width: 100%;
+  background: #f8fafd;
+  border: 1px solid #dce3ed;
+  border-radius: 12px;
+  color: #0f172a;
+  padding: 10px 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   outline: none;
 }
-select:focus, input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-
-.set-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.15fr) 48px; gap: 8px; align-items: center; margin-bottom: 12px; }
-.set-row input { text-align: center; font-weight: 800; border-radius: 12px; padding: 10px 5px; font-size: 1.05rem; height: 54px; min-width: 0; }
-
-.recovery-btn { 
-  border: 1px solid var(--border-subtle); 
-  background: #f1f5f9; 
-  color: var(--text-main); 
-  border-radius: 10px; 
-  height: 54px; 
-  padding: 0 5px; 
-  font-size: 1rem; 
-  font-weight: 700; 
-  white-space: nowrap; 
-  cursor: pointer; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+select:focus, input:focus, textarea:focus {
+  border-color: var(--sport-accent);
+  box-shadow: 0 0 0 3px var(--sport-subtle);
 }
-.recovery-btn.running { background: #fee2e2; border-color: #fecaca; color: #b91c1c; }
+
+/* =========================================================
+   NUOVA SCHERMATA REGISTRA ESERCIZIO (STRUMENTO DA CAMPO)
+   ========================================================= */
+.reg-hero {
+  background: var(--sport-soft);
+  border: 1px solid var(--sport-subtle);
+  border-left: 4px solid var(--sport-accent);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+.reg-sport-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--sport-dark);
+  background: #ffffff;
+  border: 1px solid var(--sport-subtle);
+  padding: 3px 9px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.reg-title {
+  font-size: clamp(1.2rem, 4.2vw, 1.55rem);
+  line-height: 1.2;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+.muscle-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.muscle-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--sport-dark);
+  background: #ffffff;
+  border: 1px solid var(--sport-subtle);
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+/* Guida Tecnica Accordion */
+.guide-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.03);
+}
+.guide-toggle {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 0.84rem;
+}
+.guide-toggle-sub {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.guide-chevron {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: var(--sport-dark);
+  background: var(--sport-soft);
+  border: 1px solid var(--sport-subtle);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.guide-box.open .guide-chevron { transform: rotate(180deg); }
+.guide-content {
+  display: none;
+  padding: 0 14px 14px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: #334155;
+}
+.guide-box.open .guide-content { display: block; }
+.guide-item { margin-top: 10px; }
+.guide-item-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sport-dark);
+  margin-bottom: 2px;
+}
+.guide-item.error-item {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+.guide-item.error-item .guide-item-label { color: #be123c; }
+.guide-item.custom-item {
+  background: var(--sport-soft);
+  border: 1px solid var(--sport-subtle);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+/* Righe-Card per Serie */
+.series-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.series-section-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+.series-legend {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.set-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.set-card.is-done {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+.set-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.set-badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.set-target-hint {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.set-card.is-done .set-target-hint {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.set-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 8px;
+  align-items: end;
+}
+.input-group label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+  text-align: center;
+}
+.input-group input {
+  text-align: center;
+  font-weight: 800;
+  border-radius: 12px;
+  padding: 8px 4px;
+  font-size: 1.08rem;
+  height: 50px;
+  background: #f8fafc;
+}
+.set-card.is-done .input-group input {
+  background: #ffffff;
+  border-color: #bbf7d0;
+}
+
+.recovery-btn {
+  border: 1.5px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+  border-radius: 12px;
+  height: 50px;
+  min-width: 82px;
+  padding: 0 10px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+.recovery-btn.running {
+  background: #fff1f2;
+  border-color: #f43f5e;
+  color: #be123c;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.12);
+}
 
 .check-btn {
-  background: #f1f5f9; 
-  color: #cbd5e1; 
-  border: 1px solid var(--border-subtle);
-  height: 48px; 
-  width: 48px; 
-  border-radius: 10px; 
-  font-weight: 900; 
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 1.5px solid #cbd5e1;
+  height: 50px;
+  width: 50px;
+  border-radius: 12px;
+  font-weight: 900;
   cursor: pointer;
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.15s ease;
 }
-.check-btn.done { 
-  background: #2563eb; 
-  color: #ffffff; 
-  border-color: #2563eb; 
+.check-btn.done {
+  background: linear-gradient(135deg, #16a34a, #059669);
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
 }
+
+/* Note esercizio */
+.ex-notes-box {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+.ex-notes-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+.register-save {
+  margin-top: 18px !important;
+  min-height: 54px;
+  font-size: 1rem;
+}
+
+/* Metriche live Cardio */
+.cardio-live-box {
+  background: var(--sport-soft);
+  border: 1px solid var(--sport-subtle);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cardio-live-label { font-size: 0.75rem; font-weight: 700; color: var(--sport-dark); }
+.cardio-live-val { font-size: 1.15rem; font-weight: 900; color: #0f172a; }
 
 .nav-bar {
   position: fixed; bottom: 16px; left: 12px; right: 12px; max-width: 560px; margin: 0 auto;
   background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border-subtle); border-radius: 24px;
+  -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(203, 213, 225, 0.75); border-radius: 24px;
   display: flex; justify-content: space-around; padding: 8px 12px; z-index: 1000;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.13);
 }
 .nav-item {
   background: none; border: none; color: #64748b; display: flex;
   flex-direction: column; align-items: center; gap: 2px; font-size: 0.7rem; font-weight: 700; flex: 1; cursor: pointer;
+  min-height: 48px; justify-content: center;
 }
-.nav-item.active { color: #2563eb; }
+.nav-item.active { color: var(--sport-dark); }
 
 .modal {
-  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.64); backdrop-filter: blur(8px);
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.68); backdrop-filter: blur(8px);
   z-index: 2000; display: none; align-items: center; justify-content: center; padding: 2vh 12px;
 }
 .modal.open { display: flex; }
 .sheet {
-  background: #ffffff; border: 1px solid var(--border-subtle); border-radius: 24px;
+  background: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.7); border-radius: 24px;
   width: 100%; max-width: 760px; max-height: 94vh; overflow-y: auto; padding: 24px;
-  box-shadow: 0 20px 55px rgba(0,0,0,0.2); animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.28); animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .modal.register-mode { padding: 0; align-items: stretch; }
 .modal.register-mode .sheet {
   width: 100%; max-width: 900px; height: 100%; max-height: 100%;
-  border-radius: 0; border: 0; padding: max(22px, env(safe-area-inset-top)) 22px max(24px, env(safe-area-inset-bottom));
+  border-radius: 0; border: 0; padding: max(18px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
   box-shadow: none;
 }
-.register-heading { font-size: clamp(1.25rem, 4vw, 1.65rem); line-height: 1.2; font-weight: 900; margin-bottom: 22px; color: var(--text-main); }
-.register-columns { font-size: .82rem; color: var(--text-muted); display: grid; grid-template-columns: 30px minmax(0,1fr) minmax(0,1fr) minmax(0,1.15fr) 48px; gap: 8px; margin-bottom: 10px; font-weight: 800; text-align: center; }
-.register-save { margin-top: 22px !important; min-height: 56px; font-size: 1.05rem; }
 
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .view { display: none; }
 .view.active { display: block; }
 
-.chart-container { position: relative; width: 100%; margin-top: 12px; }
-.chart-label-y { position: absolute; top: 4px; left: 8px; font-size: 0.7rem; font-weight: 700; color: #64748b; }
-canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--border-subtle); }
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #334155;
+}
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-line { width: 18px; height: 3px; border-radius: 99px; display: inline-block; }
+.legend-line.dashed { background: repeating-linear-gradient(90deg, #1d4ed8 0 5px, transparent 5px 8px); }
+
+.chart-container { position: relative; width: 100%; margin-top: 8px; }
+canvas { width: 100%; height: 225px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--border-subtle); }
 
 @media (max-width: 520px) {
   header { padding: 10px 12px; }
@@ -246,130 +560,22 @@ canvas { width: 100%; height: 210px; background: #f8fafc; border-radius: 14px; b
   .profile-name { font-size: 1.05rem; white-space: nowrap; }
   .header-actions { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
   .header-actions .btn-secondary { min-width: 0; padding: 8px 4px; font-size: 0.72rem; text-align: center; }
-  .container { padding: 18px 14px; }
-  .section-title { font-size: 1.25rem; }
-  .card { padding: 18px; }
-  .modal { padding: 0; align-items: stretch; }
-  .sheet { width: 100%; max-width: none; height: 100%; max-height: 100%; border-radius: 0; padding: max(20px, env(safe-area-inset-top)) 16px max(22px, env(safe-area-inset-bottom)); }
-  .modal.register-mode .sheet { padding-left: 14px; padding-right: 14px; }
-  .register-heading { margin-bottom: 24px; }
-  .register-columns { grid-template-columns: 26px minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr) 44px; gap: 5px; font-size: .72rem; }
-  .set-row { grid-template-columns: 26px minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr) 44px; gap: 5px; }
-  .set-row input { height: 52px; font-size: 1rem; }
-  .recovery-btn { height: 52px; font-size: .9rem; }
-  .check-btn { width: 44px; height: 48px; }
-}
-
-
-/* ── Rifinitura interfaccia: gerarchia, contrasto e feedback touch ── */
-:root {
-  --bg-main: #f3f6fb;
-  --bg-card: #ffffff;
-  --border-subtle: #e5eaf2;
-  --text-main: #172033;
-  --text-muted: #68758b;
-  --fut-gold: #d97706;
-  --fut-cyan: #0891b2;
-  --fut-green: #059669;
-  --fut-purple: #7c3aed;
-}
-body {
-  background:
-    radial-gradient(ellipse at 8% 0%, rgba(37,99,235,.075), transparent 34rem),
-    var(--bg-main);
-}
-header {
-  background: rgba(255,255,255,.88);
-  border-bottom-color: rgba(148,163,184,.22);
-  box-shadow: 0 5px 22px rgba(15,23,42,.035);
-}
-.avatar {
-  background: linear-gradient(135deg,#f59e0b,#b45309);
-  box-shadow: 0 5px 16px rgba(217,119,6,.25);
-}
-.container { padding-top: 18px; }
-.sport-card {
-  border-radius: 18px;
-  border-width: 1.5px;
-  box-shadow: 0 5px 16px rgba(15,23,42,.045);
-  min-height: 82px;
-  justify-content: center;
-}
-.sport-card:active { transform: scale(.97); }
-.sport-card .icon { font-size: 1.5rem; }
-.sport-card .title { font-size: .7rem; letter-spacing: .7px; }
-.card {
-  border-color: rgba(203,213,225,.72);
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(15,23,42,.055);
-}
-.card-clickable { border-left: 4px solid #d97706; }
-.card-clickable:active {
-  transform: scale(.985);
-  box-shadow: 0 4px 14px rgba(15,23,42,.08);
-}
-.section-title { letter-spacing: -.55px; }
-.section-actions-row .btn-secondary {
-  min-height: 38px;
-  border-radius: 12px;
-  background: #fff;
-  border-color: #e2e8f0;
-  box-shadow: 0 2px 6px rgba(15,23,42,.035);
-}
-.btn-gold {
-  background: linear-gradient(135deg,#2563eb,#1d4ed8);
-  box-shadow: 0 7px 18px rgba(37,99,235,.22);
-}
-.btn-secondary {
-  transition: background .15s ease, transform .15s ease, border-color .15s ease;
-}
-.btn-secondary:active { transform: scale(.97); }
-select, input, textarea {
-  border-color: #dce3ed;
-  background: #f8fafd;
-}
-select:focus, input:focus, textarea:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,.13);
-}
-.ex-card {
-  border-color: #e6ebf2;
-  border-radius: 17px;
-  background: linear-gradient(145deg,#fff,#f8fafc);
-}
-.ex-title { color: #b96b08; }
-.nav-bar {
-  border-color: rgba(203,213,225,.75);
-  box-shadow: 0 12px 34px rgba(15,23,42,.13);
-}
-.nav-item { min-height: 48px; justify-content: center; }
-.nav-item.active { color: #1d4ed8; }
-.modal { background: rgba(15,23,42,.68); }
-.sheet {
-  border-color: rgba(255,255,255,.7);
-  box-shadow: 0 24px 70px rgba(2,6,23,.28);
-}
-.check-btn.done {
-  background: linear-gradient(135deg,#16a34a,#059669);
-  border-color: #059669;
-}
-.recovery-btn.running {
-  background: #fff1f2;
-  border-color: #fda4af;
-  color: #be123c;
-}
-@media (max-width: 520px) {
-  .container { padding-left: 12px; padding-right: 12px; }
+  .container { padding: 18px 12px; }
   .sports-grid { gap: 7px; }
   .sport-card { min-height: 78px; padding: 10px 3px; }
+  .section-title { font-size: 1.2rem; }
   .card { padding: 16px; }
   .section-actions-row { gap: 5px; }
   .section-actions-row .btn-secondary { font-size: .64rem; }
+  .modal { padding: 0; align-items: stretch; }
+  .sheet { width: 100%; max-width: none; height: 100%; max-height: 100%; border-radius: 0; padding: max(18px, env(safe-area-inset-top)) 14px max(22px, env(safe-area-inset-bottom)); }
+  .set-controls-grid { grid-template-columns: 1fr 1fr 78px 48px; gap: 6px; }
+  .recovery-btn { min-width: 0; padding: 0 6px; font-size: 0.85rem; }
+  .check-btn { width: 48px; height: 50px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
-
 </style>
 </head>
 <body>
@@ -377,10 +583,10 @@ select:focus, input:focus, textarea:focus {
 <header>
   <div class="header-top">
     <div class="profile-info">
-      <div class="avatar">KFP</div>
-      <div>
+      <div class="avatar" aria-label="Panda">🐼</div>
+      <div style="min-width:0;">
         <div class="profile-name">Kung Fu Panda</div>
-        <div style="font-size: 0.68rem; color: #d97706; font-weight: 700;">Seven Fitness Log</div>
+        <div style="font-size: 0.68rem; color: var(--sport-accent); font-weight: 700; line-height: 1.25;">Non sono un grosso lardoso panda… Sono il grosso lardoso panda!</div>
       </div>
     </div>
     <div class="header-actions">
@@ -393,26 +599,27 @@ select:focus, input:focus, textarea:focus {
 </header>
 
 <div class="container">
-  <div id="view-home" class="view active">
-    <div class="sports-grid">
-      <div class="sport-card pesi active" onclick="switchSport('pesi')">
-        <span class="icon">🏋️‍♂️</span>
-        <span class="title" style="color:var(--fut-gold);">PESI</span>
-      </div>
-      <div class="sport-card nuoto" onclick="switchSport('nuoto')">
-        <span class="icon">🏊‍♂️</span>
-        <span class="title" style="color:var(--fut-cyan);">NUOTO</span>
-      </div>
-      <div class="sport-card corsa" onclick="switchSport('corsa')">
-        <span class="icon">🏃‍♂️</span>
-        <span class="title" style="color:var(--fut-green);">CORSA</span>
-      </div>
-      <div class="sport-card bici" onclick="switchSport('bici')">
-        <span class="icon">🚴‍♂️</span>
-        <span class="title" style="color:var(--fut-purple);">BICI</span>
-      </div>
+  <!-- Selettore Sport Condiviso in Alto -->
+  <div class="sports-grid">
+    <div class="sport-card pesi active" onclick="switchSport('pesi')">
+      <span class="icon">🏋️‍♂️</span>
+      <span class="title" style="color:var(--fut-gold);">PESI</span>
     </div>
+    <div class="sport-card nuoto" onclick="switchSport('nuoto')">
+      <span class="icon">🏊‍♂️</span>
+      <span class="title" style="color:var(--fut-cyan);">NUOTO</span>
+    </div>
+    <div class="sport-card corsa" onclick="switchSport('corsa')">
+      <span class="icon">🏃‍♂️</span>
+      <span class="title" style="color:var(--fut-green);">CORSA</span>
+    </div>
+    <div class="sport-card bici" onclick="switchSport('bici')">
+      <span class="icon">🚴‍♂️</span>
+      <span class="title" style="color:var(--fut-purple);">BICI</span>
+    </div>
+  </div>
 
+  <div id="view-home" class="view active">
     <div class="card" style="padding: 14px 16px;">
       <div style="display: flex; gap: 10px;">
         <div style="flex: 1;">
@@ -440,11 +647,11 @@ select:focus, input:focus, textarea:focus {
   </div>
 
   <div id="view-progress" class="view">
-    <div class="section-header-top">
-      <div class="section-title">Grafico Progresso Carichi</div>
+    <div class="section-header-top" style="margin-top: 6px;">
+      <div class="section-title" id="progressHeaderTitle">Grafico Progresso Pesi</div>
     </div>
     <div class="card" style="padding: 16px;">
-      <label style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 600;">Seleziona Esercizio</label>
+      <label id="progressSelectLabel" style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 600;">Seleziona Esercizio</label>
       <select id="progressExercise" onchange="renderProgress()"></select>
       <div id="progressContent"></div>
     </div>
@@ -465,7 +672,7 @@ select:focus, input:focus, textarea:focus {
 <div class="modal" id="modal" onclick="if(event.target===this)backModal()">
   <div class="sheet">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-      <h3 id="modalTitle" style="color: #0f172a; font-size: 1.1rem; font-weight: 800;">Dettaglio</h3>
+      <h3 id="modalTitle" style="color: #0f172a; font-size: 1.05rem; font-weight: 800;">Dettaglio</h3>
       <button class="btn-secondary" onclick="backModal()">← Indietro</button>
     </div>
     <div id="modalBody"></div>
@@ -646,7 +853,7 @@ const EX_GUIDES = {
     muscles: "Retto dell’addome · Obliqui",
     pos: "Supino con gambe sollevate in verticale.",
     desc: "Solleva spalle e scapole da terra e raggiungi alternativamente le caviglie.",
-    resp: "Espira verso la caviglia.", feel: "Addome alto e obliqui.", 
+    resp: "Espira verso la caviglia.", feel: "Addome alto e obliqui.",
     errors: "Tirare il collo o oscillare.", detail: "Mantieni le gambe stabili."
   },
   "Crunch inverso e candela": {
@@ -695,7 +902,7 @@ const EX_GUIDES = {
     muscles: "Tricipite brachiale · Capi laterale e mediale",
     pos: "In piedi al cavo alto, gomiti fermi lungo i fianchi.",
     desc: "Estendi gli avambracci verso il basso e apri leggermente le estremità della corda in chiusura.",
-    resp: "Espira estendendo.", feel: "Contrazione dei tricipiti.", 
+    resp: "Espira estendendo.", feel: "Contrazione dei tricipiti.",
     errors: "Muovere i gomiti o inclinare il busto.", detail: "Mantieni spalle basse."
   },
   "Asian squat multipower": {
@@ -744,7 +951,7 @@ const EX_GUIDES = {
     muscles: "Tricipiti · Pettorale · Deltoide anteriore",
     pos: "Mani su due rialzi, corpo in linea e gomiti vicini ai fianchi.",
     desc: "Scendi portando il petto tra i rialzi e poi distendi le braccia.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Tricipiti e petto.", 
+    resp: "Inspira scendendo, espira risalendo.", feel: "Tricipiti e petto.",
     errors: "Gomiti molto aperti o bacino che cede.", detail: "Scegli altezza che consenta controllo."
   },
   "French press bilanciere": {
@@ -758,7 +965,7 @@ const EX_GUIDES = {
     muscles: "Brachiale · Brachioradiale · Bicipite",
     pos: "In piedi al cavo basso con corda, presa neutra.",
     desc: "Fletti i gomiti portando le mani verso le spalle mantenendo tensione continua.",
-    resp: "Espira salendo, inspira scendendo.", feel: "Brachiale e avambraccio.", 
+    resp: "Espira salendo, inspira scendendo.", feel: "Brachiale e avambraccio.",
     errors: "Oscillare o spostare i gomiti.", detail: "Polsi neutri e spalle ferme."
   },
   "Asian squat": {
@@ -772,21 +979,45 @@ const EX_GUIDES = {
     muscles: "Petto · Tricipiti · Deltoide anteriore · Core",
     pos: "Mani poco più larghe delle spalle, corpo in linea come un plank.",
     desc: "Scendi fino a sfiorare il pavimento con il petto e risali mantenendo il corpo allineato.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Petto e tricipiti.", 
+    resp: "Inspira scendendo, espira risalendo.", feel: "Petto e tricipiti.",
     errors: "Bacino che cede o gomiti troppo aperti.", detail: "Adatta inclinazione e ampiezza al livello."
   },
   "Squat sumo": {
     muscles: "Glutei · Adduttori · Quadricipiti",
     pos: "Piedi molto più larghi delle spalle, punte ruotate verso l’esterno.",
     desc: "Scendi verticalmente mantenendo ginocchia in linea con le punte, poi risali.",
-    resp: "Inspira scendendo, espira risalendo.", feel: "Glutei e adduttori.", 
+    resp: "Inspira scendendo, espira risalendo.", feel: "Glutei e adduttori.",
     errors: "Ginocchia che collassano o schiena che si flette.", detail: "Trova una stance stabile e confortevole."
   }
 };
 
+function getExerciseGuide(name) {
+  if (!name) return null;
+  if (EX_GUIDES[name]) return EX_GUIDES[name];
+  const lower = name.trim().toLowerCase();
+  const foundKey = Object.keys(EX_GUIDES).find(k => k.toLowerCase() === lower);
+  return foundKey ? EX_GUIDES[foundKey] : null;
+}
+
+const SPORT_THEMES = {
+  pesi:  { accent: '#d97706', dark: '#b45309', subtle: 'rgba(245, 158, 11, 0.14)', soft: '#fffbeb', icon: '🏋️‍♂️', label: 'PESI' },
+  nuoto: { accent: '#0891b2', dark: '#0e7490', subtle: 'rgba(6, 182, 212, 0.14)',  soft: '#ecfeff', icon: '🏊‍♂️', label: 'NUOTO' },
+  corsa: { accent: '#059669', dark: '#047857', subtle: 'rgba(16, 185, 129, 0.14)', soft: '#ecfdf5', icon: '🏃‍♂️', label: 'CORSA' },
+  bici:  { accent: '#7c3aed', dark: '#6d28d9', subtle: 'rgba(124, 58, 237, 0.14)', soft: '#f5f3ff', icon: '🚴‍♂️', label: 'BICI' }
+};
+
+function applySportTheme(sport) {
+  const t = SPORT_THEMES[sport] || SPORT_THEMES.pesi;
+  const root = document.documentElement.style;
+  root.setProperty('--sport-accent', t.accent);
+  root.setProperty('--sport-dark', t.dark);
+  root.setProperty('--sport-subtle', t.subtle);
+  root.setProperty('--sport-soft', t.soft);
+}
+
 function ex(name, kg, reps, customDesc) {
   return {
-    name, kg, reps, description: customDesc || '',
+    name, kg, reps, description: customDesc || '', notes: '',
     sets: (typeof reps === 'string' ? reps.split(',') : Array(reps).fill(kg)).map(r => ({
       plannedKg: kg, plannedReps: +r || 6, actualKg: '', actualReps: '', done: false, recoverySeconds: 0
     }))
@@ -849,7 +1080,14 @@ try {
       }
       if(w.sports) {
         Object.keys(w.sports).forEach(sp => {
-          w.sports[sp].forEach(s => { if(s.notes === undefined) s.notes = ''; });
+          w.sports[sp].forEach(s => {
+            if(s.notes === undefined) s.notes = '';
+            if(Array.isArray(s.items)) {
+              s.items.forEach(item => {
+                if(item.notes === undefined) item.notes = '';
+              });
+            }
+          });
         });
       }
     }));
@@ -864,12 +1102,17 @@ if (currentSport === 'cyclette') currentSport = 'bici';
 
 function switchSport(sport) {
   currentSport = sport; db.activeSport = sport; save();
+  applySportTheme(sport);
   document.querySelectorAll('.sport-card').forEach(c => c.classList.remove('active'));
   document.querySelector(`.sport-card.${sport}`).classList.add('active');
 
   const titles = { pesi: 'Sessioni Pesi', nuoto: 'Sessioni Nuoto', corsa: 'Sessioni Corsa', bici: 'Sessioni Bici' };
   document.getElementById('sportHeaderTitle').textContent = titles[sport];
   renderWorkoutList();
+
+  if (document.getElementById('view-progress').classList.contains('active')) {
+    setupProgress();
+  }
 }
 
 function switchTab(tabId) {
@@ -906,6 +1149,7 @@ function cleanWeekCopy(sourceWeek, newName) {
       session.completed = false;
       session.notes = '';
       if (Array.isArray(session.items)) session.items.forEach(exercise => {
+        exercise.notes = '';
         (exercise.sets || []).forEach(set => {
           set.actualKg = '';
           set.actualReps = '';
@@ -954,25 +1198,101 @@ function openDeleteMenu() {
 }
 
 function deleteWeek() {
-  const cycle = db.cycles[ci];
-  if (!cycle || cycle.weeks.length <= 1) {
+  // Elimina la settimana selezionata nel ciclo attivo.
+  const cycle = db.cycles?.[ci];
+  if (!cycle || !Array.isArray(cycle.weeks) || cycle.weeks.length <= 1) {
     alert('Devi mantenere almeno una settimana nel ciclo.');
     return;
   }
-  const weekName = cycle.weeks[wi]?.name || `Settimana ${wi + 1}`;
+
+  const weekIndex = Number(wi);
+  if (!Number.isInteger(weekIndex) || weekIndex < 0 || weekIndex >= cycle.weeks.length) {
+    alert('Settimana selezionata non valida.');
+    return;
+  }
+
+  const weekName = cycle.weeks[weekIndex]?.name || `Settimana ${weekIndex + 1}`;
   if (!confirm(`Eliminare ${weekName} e tutte le relative registrazioni?`)) return;
-  cycle.weeks.splice(wi, 1);
+
+  // Conserva un riferimento per poter annullare la modifica se il salvataggio fallisce.
+  const removedWeek = cycle.weeks.splice(weekIndex, 1)[0];
   renumberWeeks(cycle);
-  wi = Math.min(wi, cycle.weeks.length - 1);
+  wi = Math.min(weekIndex, cycle.weeks.length - 1);
+  db.activeCycle = ci;
   db.activeWeek = wi;
+
+  try {
+    // Persistenza immediata: non dipende dalla chiusura asincrona del modal/history.
+    save();
+  } catch (error) {
+    cycle.weeks.splice(weekIndex, 0, removedWeek);
+    renumberWeeks(cycle);
+    wi = weekIndex;
+    db.activeWeek = wi;
+    alert('Eliminazione non salvata. Spazio locale insufficiente o archivio non disponibile.');
+    return;
+  }
+
+  // Aggiorna subito lista sessioni e selettore settimana.
+  renderWorkoutList();
+  fillCycleSelect();
   closeModalFully();
-  refresh();
 }
 
 function deleteSelectedSession() {
   const selected = document.getElementById('deleteSessionSelect');
   if (!selected || selected.value === '') return;
   deleteSession(Number(selected.value));
+}
+
+function formatSecondsPace(totalSeconds) {
+  const s = Math.max(0, Math.round(Number(totalSeconds) || 0));
+  const m = Math.floor(s / 60);
+  const r = s % 60;
+  return `${m}:${String(r).padStart(2, '0')}`;
+}
+
+function formatCardioPace(sport, distanceMeters, minutes) {
+  const d = Number(distanceMeters) || 0;
+  const m = Number(minutes) || 0;
+  if (d <= 0 || m <= 0) return null;
+
+  if (sport === 'nuoto') {
+    const secPer100m = (m * 60) / (d / 100);
+    return {
+      label: 'Passo medio',
+      value: `${formatSecondsPace(secPer100m)} /100m`,
+      numeric: secPer100m,
+      shortVal: `${formatSecondsPace(secPer100m)}/100m`,
+      unit: 'min/100m',
+      lowerIsBetter: true
+    };
+  }
+  if (sport === 'corsa') {
+    const km = d / 1000;
+    const secPerKm = (m * 60) / km;
+    return {
+      label: 'Passo medio',
+      value: `${formatSecondsPace(secPerKm)} /km`,
+      numeric: secPerKm,
+      shortVal: `${formatSecondsPace(secPerKm)}/km`,
+      unit: 'min/km',
+      lowerIsBetter: true
+    };
+  }
+  if (sport === 'bici') {
+    const km = d / 1000;
+    const kmh = km / (m / 60);
+    return {
+      label: 'Velocità media',
+      value: `${kmh.toFixed(1)} km/h`,
+      numeric: kmh,
+      shortVal: `${kmh.toFixed(1)}km/h`,
+      unit: 'km/h',
+      lowerIsBetter: false
+    };
+  }
+  return null;
 }
 
 function renderWorkoutList() {
@@ -983,22 +1303,31 @@ function renderWorkoutList() {
 
   if(!list.length) { container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:16px; font-size:0.85rem;">Nessuna sessione per questo sport.</p>'; return; }
 
+  const theme = SPORT_THEMES[currentSport] || SPORT_THEMES.pesi;
+
   list.forEach((session, i) => {
     const card = document.createElement('div');
     card.className = 'card card-clickable';
-    let detailText = currentSport === 'pesi' ? `${(session.items || []).length} esercizi previsti` : `Target: ${session.minutes || 30} min`;
-    let badgeSport = currentSport.toUpperCase();
-    let sportColor = currentSport === 'pesi' ? 'var(--fut-gold)' : currentSport === 'nuoto' ? 'var(--fut-cyan)' : currentSport === 'corsa' ? 'var(--fut-green)' : 'var(--fut-purple)';
+    let detailText = '';
+    if (currentSport === 'pesi') {
+      const items = session.items || [];
+      const totalSets = items.reduce((acc, it) => acc + (it.sets?.length || 0), 0);
+      const doneSets = items.reduce((acc, it) => acc + (it.sets || []).filter(s => s.done).length, 0);
+      detailText = `${items.length} esercizi · ${doneSets}/${totalSets} serie completate`;
+    } else {
+      const pace = formatCardioPace(currentSport, session.distance, session.minutes);
+      detailText = `${session.distance || 0} m · ${session.minutes || 0} min${pace ? ` · ${pace.value}` : ''}`;
+    }
 
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
-        <span style="font-size:0.68rem; font-weight:800; color:${sportColor}; letter-spacing:0.8px; text-transform:uppercase;">${badgeSport}</span>
+        <span style="font-size:0.68rem; font-weight:800; color:${theme.dark}; letter-spacing:0.8px; text-transform:uppercase;">${theme.icon} ${theme.label}</span>
         <div style="display:flex; align-items:center; gap:10px;">
           <span style="font-size: 1.2rem;">${session.completed ? '✅' : '➔'}</span>
         </div>
       </div>
       <h4 style="font-size: 1.05rem; font-weight:800; margin-bottom: 4px; color:#0f172a; line-height:1.2;">${session.name}</h4>
-      <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">${detailText}</div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">${detailText}</div>
     `;
     card.onclick = () => openSession(i);
     container.appendChild(card);
@@ -1012,21 +1341,39 @@ function openSession(idx) {
 
 function openGymSession(idx, isReplace = false) {
   let s = db.cycles[ci].weeks[wi].sports.pesi[idx];
-  let body = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;"><button class="btn-secondary" onclick="renameSession('pesi',${idx})">✎ Rinomina sessione</button></div><p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Seleziona <b>Registra</b> per inserire i carichi o <b>＋ Esercizio</b> per personalizzare.</p>`;
+  let body = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;">
+    <span style="font-size:0.75rem;color:var(--text-muted);font-weight:600;">Tocca <b>Registra</b> per aprire scheda e serie</span>
+    <button class="btn-secondary" onclick="renameSession('pesi',${idx})">✎ Rinomina</button>
+  </div>`;
 
   s.items.forEach((e, ei) => {
+    const guide = getExerciseGuide(e.name);
+    const musclesText = guide?.muscles ? guide.muscles : 'Esercizio personalizzato';
+    const sets = e.sets || [];
+    const totalSets = sets.length;
+    const doneSets = sets.filter(st => st.done).length;
+    const pct = totalSets > 0 ? Math.round((doneSets / totalSets) * 100) : 0;
+    const hasNotes = Boolean((e.notes || '').trim());
+
     body += `
       <div class="ex-card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="flex:1; min-width:0; padding-right:6px;">
-            <div class="ex-title" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.name}</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:3px;">Target: ${(e.sets || []).map(set => `${set.plannedKg}kg × ${set.plannedReps}`).join(' | ')}</div>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+          <div style="flex:1; min-width:0;">
+            <div class="ex-title">${e.name} ${hasNotes ? '<span title="Note presenti" style="font-size:0.85rem;">📝</span>' : ''}</div>
+            <div class="ex-muscles-sub">${musclesText}</div>
+            <div style="font-size:0.73rem; color:var(--text-muted); margin-top:4px;">Target: ${sets.map(set => `${set.plannedKg}kg × ${set.plannedReps}`).join(' · ')}</div>
           </div>
           <div style="display:flex; gap:4px; align-items:center; flex-shrink:0;">
             <button class="btn-secondary" onclick="editExerciseTargets(${idx},${ei})" title="Modifica target">Target</button>
-            <button class="btn-secondary" onclick="logExercise(${idx},${ei})">Registra</button>
+            <button class="btn-secondary" style="background:var(--sport-soft);border-color:var(--sport-subtle);color:var(--sport-dark);" onclick="logExercise(${idx},${ei})">Registra</button>
             <button class="btn-danger-icon" title="Rimuovi" onclick="deleteExercise(${idx},${ei})">🗑️</button>
           </div>
+        </div>
+        <div class="ex-progress-wrap">
+          <div class="ex-progress-bar">
+            <div class="ex-progress-fill ${doneSets === totalSets && totalSets > 0 ? 'complete' : ''}" style="width:${pct}%"></div>
+          </div>
+          <span class="ex-progress-label">${doneSets}/${totalSets} serie</span>
         </div>
       </div>
     `;
@@ -1034,16 +1381,16 @@ function openGymSession(idx, isReplace = false) {
 
   body += `
     <div style="display:flex; gap:8px; margin-top:14px; margin-bottom:12px;">
-      <button class="btn-secondary" style="flex:1;" onclick="addNewExercisePrompt(${idx})">＋ Esercizio</button>
+      <button class="btn-secondary" style="flex:1; background:#fff;" onclick="addNewExercisePrompt(${idx})">＋ Aggiungi Esercizio</button>
     </div>
 
     <div class="card" style="min-height:auto; margin-bottom:12px; padding:12px;">
-      <label style="font-size:0.72rem; color:var(--text-muted); display:block; margin-bottom:4px; font-weight:600;">Note della Sessione / Sensazioni</label>
-      <textarea id="sessionNotes" placeholder="Es. Ottime sensazioni..." rows="2" oninput="saveSessionNotes('pesi', ${idx}, this.value)">${s.notes || ''}</textarea>
+      <label style="font-size:0.75rem; color:#0f172a; display:block; margin-bottom:5px; font-weight:800;">📋 Note generali della sessione</label>
+      <textarea id="sessionNotes" placeholder="Es. Energia alta, buon ritmo generale..." rows="2" oninput="saveSessionNotes('pesi', ${idx}, this.value)">${s.notes || ''}</textarea>
     </div>
 
     <div style="display:flex; gap:8px;">
-      <button class="btn-gold" style="flex:1; ${s.completed ? 'background:#16a34a;border-color:#16a34a;' : ''}" onclick="toggleSessionFinished('pesi',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
+      <button class="btn-gold" style="flex:1; ${s.completed ? 'background:#16a34a;' : ''}" onclick="toggleSessionFinished('pesi',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Segna sessione terminata'}</button>
     </div>
   `;
 
@@ -1087,7 +1434,7 @@ function addNewSessionPrompt() {
 }
 
 function confirmAddSession() {
-  let name = document.getElementById('newSessionName').value.trim();  
+  let name = document.getElementById('newSessionName').value.trim();
   if(!name) return alert("Inserisci un nome.");
   const week = db.cycles[ci].weeks[wi];
   if(!week.sports[currentSport]) week.sports[currentSport] = [];
@@ -1097,7 +1444,7 @@ function confirmAddSession() {
     : { name, distance: 0, minutes: 30, notes: '', logged: false, completed: false };
 
   week.sports[currentSport].push(newS);
-  history.back(); 
+  history.back();
   refresh();
 }
 
@@ -1134,15 +1481,17 @@ function deleteExercise(sIdx, eIdx) {
 function addNewExercisePrompt(sIdx) {
   pushModalState('Aggiungi Esercizio', `
     <h4 style="margin-bottom:10px;">Aggiungi Esercizio</h4>
-    <input type="text" id="exSearch" placeholder="Cerca o scrivi esercizio..." oninput="filterExerciseOptions()" style="margin-bottom:8px;">
+    <input type="text" id="exSearch" placeholder="Cerca nel dizionario esercizi..." oninput="filterExerciseOptions()" style="margin-bottom:8px;">
     <select id="exSelect" size="5" style="margin-bottom:10px;">${Object.keys(EX_GUIDES).map(n => `<option value="${n}">${n}</option>`).join('')}</select>
     <label style="font-size:.72rem;color:var(--text-muted);display:block;margin-bottom:4px;">Nome personalizzato (opzionale)</label>
-    <input type="text" id="customExName" placeholder="Nome esercizio" style="margin-bottom:10px;">
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input type="number" id="exKg" placeholder="Kg" value="10">
-      <input type="number" id="exReps" placeholder="Ripetizioni" value="8">
+    <input type="text" id="customExName" placeholder="Lascia vuoto per usare quello selezionato" style="margin-bottom:10px;">
+    <label style="font-size:.72rem;color:var(--text-muted);display:block;margin-bottom:4px;">Indicazioni tecniche / descrizione (opzionale)</label>
+    <input type="text" id="customExDesc" placeholder="Es. Pausa 2 sec in basso, presa neutra..." style="margin-bottom:10px;">
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;"><label style="font-size:.7rem;color:var(--text-muted);">Kg iniziali</label><input type="number" id="exKg" value="10"></div>
+      <div style="flex:1;"><label style="font-size:.7rem;color:var(--text-muted);">Ripetizioni</label><input type="number" id="exReps" value="8"></div>
     </div>
-    <button class="btn-gold" onclick="confirmAddExercise(${sIdx})">Aggiungi</button>
+    <button class="btn-gold" onclick="confirmAddExercise(${sIdx})">Aggiungi alla sessione</button>
   `);
 }
 
@@ -1156,13 +1505,14 @@ function filterExerciseOptions() {
 function confirmAddExercise(sIdx) {
   const selected = document.getElementById('exSelect').value;
   const custom = document.getElementById('customExName').value.trim();
+  const customDesc = document.getElementById('customExDesc').value.trim();
   const name = custom || selected;
   const kg = Number(document.getElementById('exKg').value);
   const reps = Number(document.getElementById('exReps').value);
   if (!name) return alert('Seleziona o scrivi un esercizio.');
   if (!Number.isFinite(kg) || kg < 0 || !Number.isFinite(reps) || reps < 1) return alert('Inserisci kg e ripetizioni validi.');
   const s = db.cycles[ci].weeks[wi].sports.pesi[sIdx];
-  s.items.push(ex(name, kg, reps));
+  s.items.push(ex(name, kg, reps, customDesc));
   save();
   history.back();
   openGymSession(sIdx, true);
@@ -1218,26 +1568,127 @@ function saveExerciseTargets(sIdx, eIdx) {
 
 let activeTimerInterval = null;
 
+function toggleGuideAccordion() {
+  const box = document.getElementById('exerciseGuideBox');
+  if (box) box.classList.toggle('open');
+}
+
+function saveExerciseNotesLive(sIdx, eIdx, val) {
+  const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx]?.items?.[eIdx];
+  if (!exercise) return;
+  exercise.notes = val;
+  save();
+}
+
 function logExercise(sIdx, eIdx) {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const exercise = db.cycles[ci].weeks[wi].sports.pesi[sIdx].items[eIdx];
   const sets = exercise.sets || [];
-  
+  const guide = getExerciseGuide(exercise.name);
+  const customDesc = (exercise.description || '').trim();
+
+  const musclesArray = guide?.muscles
+    ? guide.muscles.split('·').map(m => m.trim()).filter(Boolean)
+    : ['Esercizio personalizzato'];
+
+  const musclePillsHtml = musclesArray.map(m => `<span class="muscle-pill">${m}</span>`).join('');
+
+  let guideDetailsHtml = '';
+  if (customDesc) {
+    guideDetailsHtml += `
+      <div class="guide-item custom-item">
+        <div class="guide-item-label">📌 Indicazione Personalizzata</div>
+        <div>${customDesc}</div>
+      </div>`;
+  }
+  if (guide) {
+    guideDetailsHtml += `
+      <div class="guide-item">
+        <div class="guide-item-label">🧍 Posizione Iniziale</div>
+        <div>${guide.pos}</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-item-label">⚙️ Esecuzione</div>
+        <div>${guide.desc}</div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-item-label">🌬️ Respirazione & Focus</div>
+        <div>${guide.resp} <b>Focus:</b> ${guide.feel}</div>
+      </div>
+      ${guide.detail ? `
+      <div class="guide-item">
+        <div class="guide-item-label">🎯 Dettaglio Tecnico</div>
+        <div>${guide.detail}</div>
+      </div>` : ''}
+      <div class="guide-item error-item">
+        <div class="guide-item-label">⚠️ Errori Comuni da Evitare</div>
+        <div>${guide.errors}</div>
+      </div>`;
+  } else if (!customDesc) {
+    guideDetailsHtml += `
+      <div class="guide-item">
+        <div>Nessuna scheda tecnica predefinita per questo esercizio. Puoi appuntare setup, sensazioni o consigli nel campo <b>Note esercizio</b> qui sotto.</div>
+      </div>`;
+  }
+
   const body = `
-    <h4 class="register-heading">${exercise.name}</h4>
-    <div class="register-columns">
-      <span>#</span><span>Kg</span><span>Reps</span><span>Recupero</span><span>✓</span>
+    <div class="reg-hero">
+      <div class="reg-sport-tag">🏋️‍♂️ PESI</div>
+      <h4 class="reg-title">${exercise.name}</h4>
+      <div class="muscle-pills">${musclePillsHtml}</div>
     </div>
+
+    <div class="guide-box" id="exerciseGuideBox">
+      <button type="button" class="guide-toggle" onclick="toggleGuideAccordion()">
+        <div>
+          <span>💡 Guida tecnica e postura</span>
+          <span class="guide-toggle-sub">Posizione, esecuzione, respirazione ed errori comuni</span>
+        </div>
+        <span class="guide-chevron">▼</span>
+      </button>
+      <div class="guide-content">
+        ${guideDetailsHtml}
+      </div>
+    </div>
+
+    <div class="series-section-header">
+      <span class="series-section-title">Registrazione Serie</span>
+      <span class="series-legend">✓ = serie eseguita</span>
+    </div>
+
     ${sets.map((set, i) => `
-      <div class="set-row">
-        <b style="font-size:.8rem;">${i+1}</b>
-        <input type="number" id="actualKg${i}" value="${set.actualKg ?? ''}" placeholder="${set.plannedKg ?? 'Kg'}">
-        <input type="number" id="actualReps${i}" value="${set.actualReps ?? ''}" placeholder="${set.plannedReps ?? 'Reps'}">
-        <button class="recovery-btn ${set.recoveryStartedAt ? 'running' : ''}" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">${formatRecoveryTime(getRecoverySeconds(set))}</button>
-        <button class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">✓</button>
+      <div class="set-card ${set.done ? 'is-done' : ''}" id="setCard${i}">
+        <div class="set-card-top">
+          <span class="set-badge">Serie ${i + 1}</span>
+          <span class="set-target-hint">Target: ${set.plannedKg ?? '—'} kg × ${set.plannedReps ?? '—'} rep</span>
+        </div>
+        <div class="set-controls-grid">
+          <div class="input-group">
+            <label for="actualKg${i}">Kg</label>
+            <input type="number" step="0.5" id="actualKg${i}" value="${set.actualKg ?? ''}" placeholder="${set.plannedKg ?? '0'}">
+          </div>
+          <div class="input-group">
+            <label for="actualReps${i}">Reps</label>
+            <input type="number" id="actualReps${i}" value="${set.actualReps ?? ''}" placeholder="${set.plannedReps ?? '0'}">
+          </div>
+          <div class="input-group">
+            <label>Recupero</label>
+            <button type="button" class="recovery-btn ${set.recoveryStartedAt ? 'running' : ''}" id="recoveryBtn${i}" onclick="toggleRecovery(${sIdx},${eIdx},${i})">⏱️ ${formatRecoveryTime(getRecoverySeconds(set))}</button>
+          </div>
+          <div class="input-group">
+            <label>Fatta</label>
+            <button type="button" class="check-btn ${set.done ? 'done' : ''}" onclick="toggleSetDone(${sIdx},${eIdx},${i})" id="doneBtn${i}">✓</button>
+          </div>
+        </div>
       </div>
     `).join('')}
-    <button class="btn-gold register-save" onclick="saveExerciseLog(${sIdx},${eIdx})">Salva registrazioni</button>
+
+    <div class="ex-notes-box">
+      <label class="ex-notes-label" for="exerciseNotesInput">📝 Note esercizio</label>
+      <textarea id="exerciseNotesInput" rows="2" placeholder="Sensazioni, difficoltà, carichi da aumentare la prossima settimana..." oninput="saveExerciseNotesLive(${sIdx},${eIdx},this.value)">${exercise.notes || ''}</textarea>
+    </div>
+
+    <button type="button" class="btn-gold register-save" onclick="saveExerciseLog(${sIdx},${eIdx})">💾 Salva registrazioni</button>
   `;
 
   pushModalState('Registra esercizio', body, { type: 'register' }, 'register');
@@ -1246,7 +1697,7 @@ function logExercise(sIdx, eIdx) {
     sets.forEach((set, i) => {
       const btn = document.getElementById(`recoveryBtn${i}`);
       if (btn && set.recoveryStartedAt) {
-        btn.textContent = formatRecoveryTime(getRecoverySeconds(set));
+        btn.textContent = `⏱️ ${formatRecoveryTime(getRecoverySeconds(set))}`;
       }
     });
   }, 1000);
@@ -1261,6 +1712,10 @@ function saveExerciseLog(sIdx, eIdx) {
     set.actualKg = kg === '' ? '' : Number(kg);
     set.actualReps = reps === '' ? '' : Number(reps);
   });
+  const notesEl = document.getElementById('exerciseNotesInput');
+  if (notesEl) {
+    exercise.notes = notesEl.value;
+  }
   save();
   history.back();
   openGymSession(sIdx, true);
@@ -1272,6 +1727,8 @@ function toggleSetDone(sIdx, eIdx, setIdx) {
   save();
   const btn = document.getElementById(`doneBtn${setIdx}`);
   if (btn) btn.classList.toggle('done', set.done);
+  const card = document.getElementById(`setCard${setIdx}`);
+  if (card) card.classList.toggle('is-done', set.done);
 }
 
 function getRecoverySeconds(set) {
@@ -1296,31 +1753,66 @@ function toggleRecovery(sIdx, eIdx, setIdx) {
     delete set.recoveryStartedAt;
     if (btn) {
       btn.classList.remove('running');
-      btn.textContent = formatRecoveryTime(set.recoverySeconds);
+      btn.textContent = `⏱️ ${formatRecoveryTime(set.recoverySeconds)}`;
     }
   } else {
     set.recoveryStartedAt = Date.now();
     if (btn) {
       btn.classList.add('running');
-      btn.textContent = formatRecoveryTime(0);
+      btn.textContent = `⏱️ ${formatRecoveryTime(0)}`;
     }
   }
   save();
 }
 
+function updateCardioLiveMetric() {
+  const d = Number(document.getElementById('cardioDistance')?.value) || 0;
+  const m = Number(document.getElementById('cardioMinutes')?.value) || 0;
+  const pace = formatCardioPace(currentSport, d, m);
+  const labelEl = document.getElementById('cardioLiveLabel');
+  const valEl = document.getElementById('cardioLiveVal');
+  if (!labelEl || !valEl) return;
+  if (pace) {
+    labelEl.textContent = pace.label;
+    valEl.textContent = pace.value;
+  } else {
+    labelEl.textContent = currentSport === 'bici' ? 'Velocità media' : 'Passo medio';
+    valEl.textContent = '—';
+  }
+}
+
 function openCardioSession(idx, isReplace = false) {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
   const s = db.cycles[ci].weeks[wi].sports[currentSport][idx];
+  const theme = SPORT_THEMES[currentSport] || SPORT_THEMES.nuoto;
+  const initialPace = formatCardioPace(currentSport, s.distance, s.minutes);
+
   const body = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h4 style="margin:0;">${s.name}</h4><button class="btn-secondary" onclick="renameSession('${currentSport}',${idx})">✎ Rinomina</button></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
-      <div><label style="font-size:.72rem;color:var(--text-muted);">Distanza (m)</label><input type="number" id="cardioDistance" value="${s.distance || 0}"></div>
-      <div><label style="font-size:.72rem;color:var(--text-muted);">Durata (min)</label><input type="number" id="cardioMinutes" value="${s.minutes || 0}"></div>
+    <div class="reg-hero">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="reg-sport-tag">${theme.icon} ${theme.label}</span>
+        <button class="btn-secondary" style="background:#fff;padding:5px 10px;font-size:0.7rem;" onclick="renameSession('${currentSport}',${idx})">✎ Rinomina</button>
+      </div>
+      <h4 class="reg-title" style="margin-bottom:0;margin-top:4px;">${s.name}</h4>
     </div>
-    <label style="font-size:.72rem;color:var(--text-muted);display:block;margin-bottom:4px;">Note</label>
-    <textarea id="cardioNotes" rows="2" oninput="saveCardioNotes(${idx},this.value)">${s.notes || ''}</textarea>
-    <button class="btn-gold" style="margin-top:12px;" onclick="saveCardioSession(${idx})">Salva sessione</button>
-    <button class="btn-gold" style="margin-top:8px;${s.completed ? 'background:#16a34a;' : ''}" onclick="toggleSessionFinished('${currentSport}',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Sessione terminata'}</button>
+
+    <div class="cardio-live-box">
+      <span class="cardio-live-label" id="cardioLiveLabel">${initialPace ? initialPace.label : (currentSport === 'bici' ? 'Velocità media' : 'Passo medio')}</span>
+      <span class="cardio-live-val" id="cardioLiveVal">${initialPace ? initialPace.value : '—'}</span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div><label style="font-size:.72rem;color:var(--text-muted);font-weight:700;display:block;margin-bottom:4px;">Distanza (metri)</label><input type="number" id="cardioDistance" value="${s.distance || 0}" oninput="updateCardioLiveMetric()"></div>
+      <div><label style="font-size:.72rem;color:var(--text-muted);font-weight:700;display:block;margin-bottom:4px;">Durata (minuti)</label><input type="number" id="cardioMinutes" value="${s.minutes || 0}" oninput="updateCardioLiveMetric()"></div>
+    </div>
+
+    <div class="ex-notes-box" style="margin-top:0;">
+      <label class="ex-notes-label" for="cardioNotes">📝 Note sessione</label>
+      <textarea id="cardioNotes" rows="2" placeholder="Sensazioni, battiti, ritmo..." oninput="saveCardioNotes(${idx},this.value)">${s.notes || ''}</textarea>
+    </div>
+
+    <button class="btn-gold" style="margin-top:14px;" onclick="saveCardioSession(${idx})">💾 Salva sessione</button>
+    <button class="btn-gold" style="margin-top:8px;${s.completed ? 'background:#16a34a;' : 'background:#64748b;'}" onclick="toggleSessionFinished('${currentSport}',${idx})">${s.completed ? '✓ Sessione terminata' : '☐ Segna sessione terminata'}</button>
   `;
   if (isReplace) {
     replaceModalState(s.name, body, { type: 'cardioSession', idx });
@@ -1340,49 +1832,121 @@ function saveCardioSession(idx) {
   s.minutes = Number(document.getElementById('cardioMinutes').value) || 0;
   s.notes = document.getElementById('cardioNotes').value;
   s.logged = true;
-  save(); 
-  history.back(); 
+  save();
+  history.back();
   refresh();
 }
 
+/* ==========================================================================
+   PROGRESSI MULTI-SPORT (PESI + CARDIO A DOPPIA LINEA)
+   ========================================================================== */
+
 function setupProgress() {
   if (activeTimerInterval) { clearInterval(activeTimerInterval); activeTimerInterval = null; }
-  const all = new Set();
-  db.cycles.forEach(c => c.weeks.forEach(w => (w.sports.pesi || []).forEach(s => (s.items || []).forEach(e => all.add(e.name)))));
   const sel = document.getElementById('progressExercise');
+  const titleEl = document.getElementById('progressHeaderTitle');
+  const labelEl = document.getElementById('progressSelectLabel');
   const current = sel.value;
-  sel.innerHTML = [...all].map(n => `<option value="${n}">${n}</option>`).join('');
-  if (all.has(current)) sel.value = current;
+
+  if (currentSport === 'pesi') {
+    titleEl.textContent = 'Grafico Progresso Carichi';
+    labelEl.textContent = 'Seleziona Esercizio';
+    const all = new Set();
+    db.cycles.forEach(c => c.weeks.forEach(w => (w.sports.pesi || []).forEach(s => (s.items || []).forEach(e => all.add(e.name)))));
+    sel.innerHTML = [...all].map(n => `<option value="${n}">${n}</option>`).join('');
+    if (all.has(current)) sel.value = current;
+  } else {
+    const sportNames = { nuoto: 'Nuoto', corsa: 'Corsa', bici: 'Bici' };
+    titleEl.textContent = `Grafico Progresso ${sportNames[currentSport]}`;
+    labelEl.textContent = 'Filtra Sessione';
+    const sessionNames = new Set();
+    db.cycles.forEach(c => c.weeks.forEach(w => ((w.sports && w.sports[currentSport]) || []).forEach(s => sessionNames.add(s.name))));
+    const options = ['<option value="__ALL__">Tutte le sessioni</option>']
+      .concat([...sessionNames].map(n => `<option value="${n}">${n}</option>`));
+    sel.innerHTML = options.join('');
+    if (current === '__ALL__' || sessionNames.has(current)) sel.value = current;
+  }
+
   renderProgress();
 }
 
 function renderProgress() {
   const sel = document.getElementById('progressExercise');
-  if (!sel || !sel.value) {
-    document.getElementById('progressContent').innerHTML = '<p style="color:var(--text-muted);margin-top:12px;">Nessun esercizio disponibile.</p>';
-    return;
-  }
-  let n = sel.value;
-  let h = collectHistory(n);
+  const theme = SPORT_THEMES[currentSport] || SPORT_THEMES.pesi;
 
-  let detailsHtml = h.length ? `
-    <div style="margin-top:10px; font-size:0.78rem; color:var(--text-muted);">
-      <b>Storico registrazioni:</b>
-      <div style="display:flex; flex-direction:column; gap:7px; margin-top:7px;">
-        ${h.map(x => `<div style="background:#f1f5f9; padding:8px 10px; border-radius:8px; border:1px solid var(--border-subtle);"><b>${x.labelReadable}:</b><div style="margin-top:4px; color:var(--text-main); line-height:1.5;"><div><b>Target:</b> ${x.targetText}</div><div><b>Eseguito:</b> ${x.actualText}</div></div></div>`).join('')}
+  if (currentSport === 'pesi') {
+    if (!sel || !sel.value) {
+      document.getElementById('progressContent').innerHTML = '<p style="color:var(--text-muted);margin-top:12px;">Nessun esercizio disponibile.</p>';
+      return;
+    }
+    let n = sel.value;
+    let h = collectHistory(n);
+
+    let detailsHtml = h.length ? `
+      <div style="margin-top:12px; font-size:0.78rem; color:var(--text-muted);">
+        <b>Storico registrazioni:</b>
+        <div style="display:flex; flex-direction:column; gap:7px; margin-top:7px;">
+          ${h.map(x => `
+            <div style="background:#f1f5f9; padding:8px 10px; border-radius:10px; border:1px solid var(--border-subtle);">
+              <b>${x.labelReadable}:</b>
+              <div style="margin-top:4px; color:var(--text-main); line-height:1.5;">
+                <div><b>Target:</b> ${x.targetText}</div>
+                <div><b>Eseguito:</b> ${x.actualText}</div>
+                ${x.notes ? `<div style="margin-top:3px; color:#b45309; font-style:italic;">📝 ${x.notes}</div>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
       </div>
-    </div>
-  ` : '';
+    ` : '';
 
-  document.getElementById('progressContent').innerHTML = `
-    <h4 style="margin-top:10px; color:#d97706; font-size:1rem;">${n}</h4>
-    <div class="chart-container">
-      <div class="chart-label-y">Kg</div>
-      <canvas id="progressChart"></canvas>
-    </div>
-    ${detailsHtml}
-  `;
-  drawLine('progressChart', h.map(x=>x.labelShort), h.map(x=>x.kg));
+    document.getElementById('progressContent').innerHTML = `
+      <h4 style="margin-top:12px; color:${theme.dark}; font-size:1rem;">${n}</h4>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="background:${theme.accent};"></span> Carico massimo (Kg)</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="progressChart"></canvas>
+      </div>
+      ${detailsHtml}
+    `;
+    drawLine('progressChart', h.map(x=>x.labelShort), h.map(x=>x.kg), theme.accent);
+  } else {
+    const filterName = sel ? sel.value : '__ALL__';
+    const h = collectCardioHistory(currentSport, filterName);
+    const isMeters = currentSport === 'nuoto';
+    const distLabel = isMeters ? 'Distanza (m)' : 'Distanza (km)';
+    const paceLabel = currentSport === 'bici' ? 'Velocità media (km/h)' : (currentSport === 'nuoto' ? 'Passo (min/100m)' : 'Passo (min/km)');
+
+    let detailsHtml = h.length ? `
+      <div style="margin-top:12px; font-size:0.78rem; color:var(--text-muted);">
+        <b>Storico sessioni:</b>
+        <div style="display:flex; flex-direction:column; gap:7px; margin-top:7px;">
+          ${h.map(x => `
+            <div style="background:#f1f5f9; padding:8px 10px; border-radius:10px; border:1px solid var(--border-subtle);">
+              <b>${x.labelReadable}:</b>
+              <div style="margin-top:4px; color:var(--text-main); line-height:1.5;">
+                <div><b>Distanza & Tempo:</b> ${x.distanceMeters} m in ${x.minutes} min</div>
+                ${x.paceText ? `<div><b>${x.paceLabel}:</b> ${x.paceText}</div>` : ''}
+                ${x.notes ? `<div style="margin-top:3px; color:${theme.dark}; font-style:italic;">📝 ${x.notes}</div>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    ` : '';
+
+    document.getElementById('progressContent').innerHTML = `
+      <h4 style="margin-top:12px; color:${theme.dark}; font-size:1rem;">${filterName === '__ALL__' ? `Andamento ${theme.label}` : filterName}</h4>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="background:${theme.accent};"></span> ${distLabel}</span>
+        <span class="legend-item"><span class="legend-line dashed"></span> ${paceLabel}</span>
+      </div>
+      <div class="chart-container">
+        <canvas id="progressChart"></canvas>
+      </div>
+      ${detailsHtml}
+    `;
+    drawCardioDualLine('progressChart', h, theme.accent, isMeters);
+  }
 }
 
 function collectHistory(name) {
@@ -1403,6 +1967,7 @@ function collectHistory(name) {
             labelShort: `C${cx + 1}S${wx + 1}`,
             labelReadable: `${c.name} - ${w.name} · ${session.name}`,
             kg: max,
+            notes: (e.notes || '').trim(),
             targetText: sets.map(st => `${st.plannedKg ?? e.kg ?? '—'}kg × ${st.plannedReps ?? '—'}`).join(' | '),
             actualText: sets.map(st => {
               const hasActual = st.actualKg !== '' && st.actualKg != null && st.actualReps !== '' && st.actualReps != null;
@@ -1416,9 +1981,39 @@ function collectHistory(name) {
   return out;
 }
 
-function drawLine(id, labels, values) {
+function collectCardioHistory(sport, filterName) {
+  let out = [];
+  db.cycles.forEach((c, cx) => c.weeks.forEach((w, wx) => {
+    const list = (w.sports && w.sports[sport]) || [];
+    list.forEach(session => {
+      if (filterName !== '__ALL__' && session.name !== filterName) return;
+      const dist = Number(session.distance) || 0;
+      const mins = Number(session.minutes) || 0;
+      if (dist > 0 || mins > 0) {
+        const pace = formatCardioPace(sport, dist, mins);
+        out.push({
+          labelShort: `C${cx + 1}S${wx + 1}`,
+          labelReadable: `${c.name} - ${w.name} · ${session.name}`,
+          distanceMeters: dist,
+          distanceDisplay: sport === 'nuoto' ? dist : Number((dist / 1000).toFixed(2)),
+          distanceTag: sport === 'nuoto' ? `${dist}m` : `${(dist / 1000).toFixed(1)}km`,
+          minutes: mins,
+          paceNumeric: pace ? pace.numeric : null,
+          paceShort: pace ? pace.shortVal : null,
+          paceText: pace ? pace.value : null,
+          paceLabel: pace ? pace.label : '',
+          lowerIsBetter: pace ? pace.lowerIsBetter : false,
+          notes: (session.notes || '').trim()
+        });
+      }
+    });
+  }));
+  return out;
+}
+
+function drawLine(id, labels, values, strokeColor = '#d97706') {
   let c = document.getElementById(id); if(!c) return;
-  let ctx = c.getContext('2d'), w = c.width = c.offsetWidth || 300, h = c.height = 210;
+  let ctx = c.getContext('2d'), w = c.width = c.offsetWidth || 300, h = c.height = 225;
   ctx.clearRect(0,0,w,h);
 
   let valid = values.filter(v => Number.isFinite(v));
@@ -1428,23 +2023,129 @@ function drawLine(id, labels, values) {
   }
 
   let min = Math.min(...valid)-2, max = Math.max(...valid)+2;
-  let left = 35, right = w - 20, top = 30, bottom = h - 35;
+  if (min === max) { min -= 1; max += 1; }
+  let left = 35, right = w - 24, top = 32, bottom = h - 35;
 
   let pts = values.map((v, i) => ({
     x: left + (right - left) * (labels.length === 1 ? 0.5 : i / (labels.length - 1)),
     y: bottom - (v - min) / (max - min) * (bottom - top), v, label: labels[i]
   }));
 
-  ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2.5; ctx.beginPath();
+  ctx.strokeStyle = strokeColor; ctx.lineWidth = 2.5; ctx.beginPath();
   pts.forEach((p,i) => i ? ctx.lineTo(p.x,p.y) : ctx.moveTo(p.x,p.y));
   ctx.stroke();
 
   pts.forEach(p => {
     ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI*2); ctx.fill();
-    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = strokeColor; ctx.lineWidth = 2; ctx.stroke();
 
     ctx.fillStyle = '#0f172a'; ctx.font = 'bold 10px Inter, sans-serif';
     ctx.fillText(p.v + 'kg', p.x - 10, p.y - 8);
+
+    ctx.fillStyle = '#64748b'; ctx.font = '9px Inter, sans-serif';
+    ctx.fillText(p.label, p.x - 14, bottom + 18);
+  });
+}
+
+function drawCardioDualLine(id, items, distColor, isMeters) {
+  let c = document.getElementById(id); if(!c) return;
+  let ctx = c.getContext('2d'), w = c.width = c.offsetWidth || 300, h = c.height = 225;
+  ctx.clearRect(0,0,w,h);
+
+  if (!items || !items.length) {
+    ctx.fillStyle = '#64748b'; ctx.font = '12px Inter, sans-serif';
+    ctx.fillText('Nessun dato cardio registrato', 16, 40); return;
+  }
+
+  const left = 36, right = w - 36, top = 36, bottom = h - 35;
+
+  // Scala 1: Distanza
+  const distVals = items.map(it => it.distanceDisplay).filter(v => Number.isFinite(v));
+  let dMin = Math.min(...distVals), dMax = Math.max(...distVals);
+  if (dMin === dMax) { dMin = Math.max(0, dMin - (isMeters ? 200 : 1)); dMax += (isMeters ? 200 : 1); }
+  else {
+    const pad = (dMax - dMin) * 0.15;
+    dMin = Math.max(0, dMin - pad);
+    dMax += pad;
+  }
+
+  // Scala 2: Passo / Velocità
+  const paceVals = items.map(it => it.paceNumeric).filter(v => v !== null && Number.isFinite(v));
+  const lowerIsBetter = items[0]?.lowerIsBetter ?? false;
+  let pMin = paceVals.length ? Math.min(...paceVals) : 0;
+  let pMax = paceVals.length ? Math.max(...paceVals) : 1;
+  if (pMin === pMax) { pMin = Math.max(1, pMin - 10); pMax += 10; }
+  else {
+    const pad = (pMax - pMin) * 0.15;
+    pMin = Math.max(1, pMin - pad);
+    pMax += pad;
+  }
+
+  // Griglia orizzontale leggera
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 1;
+  [top, (top + bottom) / 2, bottom].forEach(yPos => {
+    ctx.beginPath(); ctx.moveTo(left, yPos); ctx.lineTo(right, yPos); ctx.stroke();
+  });
+
+  const getX = (i) => left + (right - left) * (items.length === 1 ? 0.5 : i / (items.length - 1));
+
+  // Punti Distanza
+  const distPts = items.map((it, i) => ({
+    x: getX(i),
+    y: bottom - ((it.distanceDisplay - dMin) / (dMax - dMin)) * (bottom - top),
+    tag: it.distanceTag,
+    label: it.labelShort
+  }));
+
+  // Punti Passo / Velocità
+  const pacePts = [];
+  items.forEach((it, i) => {
+    if (it.paceNumeric !== null && Number.isFinite(it.paceNumeric)) {
+      const ratio = (it.paceNumeric - pMin) / (pMax - pMin);
+      // Se lowerIsBetter (min/km o min/100m), un numero più basso = passo più veloce -> va più in alto
+      const norm = lowerIsBetter ? (1 - ratio) : ratio;
+      pacePts.push({
+        x: getX(i),
+        y: bottom - norm * (bottom - top),
+        tag: it.paceShort
+      });
+    }
+  });
+
+  // Disegna Linea Passo (tratteggiata blu)
+  const paceColor = '#1d4ed8';
+  if (pacePts.length) {
+    ctx.save();
+    ctx.strokeStyle = paceColor;
+    ctx.lineWidth = 2.2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    pacePts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+    ctx.stroke();
+    ctx.restore();
+
+    pacePts.forEach(p => {
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = paceColor; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = paceColor; ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.fillText(p.tag, p.x - 16, Math.min(bottom - 4, p.y + 14));
+    });
+  }
+
+  // Disegna Linea Distanza (continua colore sport)
+  ctx.strokeStyle = distColor;
+  ctx.lineWidth = 2.6;
+  ctx.beginPath();
+  distPts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+  ctx.stroke();
+
+  distPts.forEach(p => {
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = distColor; ctx.lineWidth = 2.2; ctx.stroke();
+
+    ctx.fillStyle = '#0f172a'; ctx.font = 'bold 10px Inter, sans-serif';
+    ctx.fillText(p.tag, p.x - 14, Math.max(14, p.y - 8));
 
     ctx.fillStyle = '#64748b'; ctx.font = '9px Inter, sans-serif';
     ctx.fillText(p.label, p.x - 14, bottom + 18);
@@ -1548,7 +2249,7 @@ function exportReportPT() {
           textLines.push(`    [${sp.toUpperCase()}] ${session.name}`);
 
           if (session.notes) {
-            textLines.push(`       Note: ${session.notes}`);
+            textLines.push(`       Note sessione: ${session.notes}`);
           }
 
           if (session.items) {
@@ -1568,10 +2269,14 @@ function exportReportPT() {
               }).join(' ');
 
               textLines.push(`      • ${e.name}: ${seriesText}`);
+              if (e.notes && e.notes.trim()) {
+                textLines.push(`        Note esercizio: ${e.notes.trim()}`);
+              }
             });
           } else {
+            const pace = formatCardioPace(sp, session.distance, session.minutes);
             textLines.push(
-              `      • Target: ${session.distance || 0}m / ${session.minutes || 0}min`
+              `      • Target: ${session.distance || 0}m / ${session.minutes || 0}min${pace ? ` (${pace.label}: ${pace.value})` : ''}`
             );
           }
 
@@ -1619,7 +2324,9 @@ function importBackup(event) {
       if(parsed && parsed.cycles) {
         db = parsed; save();
         ci = db.activeCycle || 0; wi = db.activeWeek || 0; currentSport = db.activeSport || 'pesi';
-        refresh(); alert('Backup importato con successo!');
+        fillCycleSelect();
+        switchSport(currentSport);
+        alert('Backup importato con successo!');
       } else { alert('File non valido!'); }
     } catch(err) { alert('Errore nella lettura del file JSON!'); }
   };
@@ -1630,7 +2337,6 @@ function importBackup(event) {
    SINGLE-SOURCE-OF-TRUTH HISTORY API NAVIGATION SYSTEM
    ========================================================================== */
 
-// Inizializzazione dello stato base (Home) se non presente
 if (!history.state || history.state.modalDepth === undefined) {
   history.replaceState({ modalDepth: 0, modalType: null }, '');
 }
@@ -1645,11 +2351,9 @@ window.addEventListener('popstate', (event) => {
   }
 
   if (modalDepth === 0) {
-    // Chiusura totale del modale (ritorno alla home)
     const modal = document.getElementById('modal');
     modal.classList.remove('open', 'register-mode');
   } else if (state && state.modalData) {
-    // Ripristino dello stato visivo del modale basato sui dati salvati nello history state
     const modal = document.getElementById('modal');
     const body = document.getElementById('modalBody');
     document.getElementById('modalTitle').textContent = state.modalData.title;
@@ -1719,17 +2423,16 @@ function closeModalFully() {
   }
 }
 
-// Hook per integrazione nativa Android WebView (se invocato dall'activity Kotlin)
 window.handleNativeBack = function() {
   const currentDepth = history.state && history.state.modalDepth !== undefined ? history.state.modalDepth : 0;
   if (currentDepth > 0) {
     backModal();
-    return true; // Gestito internamente dalla web app
+    return true;
   }
-  return false; // Lascia propagare l'evento all'app nativa (es. chiusura app)
+  return false;
 };
 
-fillCycleSelect(); 
+fillCycleSelect();
 switchSport(currentSport);
 </script>
 </body>
